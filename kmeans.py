@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 
 from random import randint
-
+from math import sqrt
 
         
         
@@ -22,7 +22,8 @@ class KMeans(object):
     
     
     def distance(self,data1,data2):
-        return abs(long(data1)-long(data2))
+        return abs(data1-data2)
+#         return sqrt((data1[0]-data2[0])*(data1[0]-data2[0])+ (data1[1]-data2[1])*(data1[1]-data2[1]))
     
     
     def cluster(self,central,data):
@@ -60,8 +61,9 @@ class KMeans(object):
         return _seed
     
     def have_chage(self,oldcluster,clusterresult):
+        if len(oldcluster.keys()) == 0:
+            return False
         for _oc , _ov in oldcluster.items():
-            isSameLine = True
             for _c , _v in clusterresult.items():
                 isSameLine = True
                 for _index in _ov.keys():
@@ -69,7 +71,7 @@ class KMeans(object):
                         isSameLine = False
                         break
             if not isSameLine:
-                return False
+                return isSameLine
         return True
                     
                 
@@ -82,14 +84,16 @@ class KMeans(object):
         _oldcluster = {}
         while not isOver:
             _cluster = self.cluster(_randseed, data)
-            print 1
-            if not self.have_chage(_oldcluster, _cluster):
+            print _cluster
+            print _oldcluster
+            if  self.have_chage(_oldcluster, _cluster):
                 break
             _oldcluster.clear()
-            _oldcluster = None
-            _oldcluster = _cluster
+            for _key,_val in _cluster.items():
+                _oldcluster[_key] = _val
+            _cluster = None
             _randseed = None
-            _randseed = self.find_central(_cluster)
+            _randseed = self.find_central(_oldcluster)
         
         result = {}
         count = 1
@@ -115,5 +119,5 @@ class KMeans(object):
 
 if __name__ == "__main__":
     k = KMeans()
-    print k.k_means(3, [1,4,5,2 ,100,16,8,9,10,101,150,1555,177,120,14,4,5])
+    print k.k_means(2, [1,4,5,2 ,100,16,8,9,10,101,150,1555,177,120,14,4,5])
         
