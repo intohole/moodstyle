@@ -28,6 +28,9 @@ def toVector(words1,words2):
   
   
 def similar(words1,words2):
+    '''
+    计算两个文档 相似度
+    '''
     _vector = toVector(words1, words2)
     sum_word12 = 0
     sum_word1_distance = 0
@@ -39,12 +42,10 @@ def similar(words1,words2):
             _w1 = _vector[1][_word]
         if _vector[2].has_key(_word):
             _w2 = _vector[2][_word]
-        sum_word12 = _w1 * _w2 + sum_word12
+        sum_word12 = _w1 * _w2 + sum_word12 # x1*y1 + x2*y2 + ...+ xn*yn
         sum_word1_distance = _w1*_w1 + sum_word1_distance
         sum_word2_distance = _w2*_w2 + sum_word2_distance
-    print sum_word12
-    print sum_word1_distance
-    print sum_word2_distance
+        # x1*y1 + x2*y2 + ...+ xn*yn / sqrt(x1*x1 + x2*x2 + x3*x3 + ...+ xn*xn) * sqrt(y1*y1 + y2*y2 + y3*y3 + ... + yn*yn)
     _similar = sum_word12 / (math.sqrt(sum_word1_distance) * math.sqrt(sum_word2_distance))
     return _similar
 
