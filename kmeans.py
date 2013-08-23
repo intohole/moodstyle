@@ -63,15 +63,10 @@ class KMeans(object):
     def have_chage(self,oldcluster,clusterresult):
         if len(oldcluster.keys()) == 0:
             return False
-        for _oc , _ov in oldcluster.items():
-            for _c , _v in clusterresult.items():
-                isSameLine = True
-                for _index in _ov.keys():
-                    if not _v.has_key(_index):
-                        isSameLine = False
-                        break
-            if not isSameLine:
-                return isSameLine
+        for  _ov in oldcluster.values():
+            isNotEqual = False
+            for _v in clusterresult.values():
+                
         return True
                     
                 
