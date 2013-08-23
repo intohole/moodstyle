@@ -13,7 +13,7 @@ class KMeans(object):
         for _ in range(k):
             _find = False 
             while not _find:
-                r = randint(0,len(data))
+                r = randint(0,len(data)-1)
                 if not k_seed.has_key(r):
                     k_seed[r] = [(r,0)]
                     _find = True
@@ -21,11 +21,11 @@ class KMeans(object):
     
     
     def distance(self,data1,data2):
-        return long(data1)-long(data2)
+        return abs(long(data1)-long(data2))
     
     
     def cluster(self,central,data):
-        for i in range(len(data) - 1 ):
+        for i in range(len(data)):
             if i not in central.keys():
                 _min_value = None
                 _index = None
@@ -33,6 +33,7 @@ class KMeans(object):
                     _dis = self.distance(data[_key], data[i])
                     if not _min_value or _dis < _min_value:
                         _index = _key
+                        _min_value = _dis
                 central[_key].append((i,_min_value))
         return central
     
@@ -45,10 +46,18 @@ class KMeans(object):
             for _v in _val:
                 _central = _central + _v[1]
             _central = _central / len(_val)
+            _min = None
+            _index = None
+            for _v in _val:
+                if not _min or _v[1] <_min:
+                    _min = _v[1]
+                    _index = _v[0]
+            _seed[_index] = (_index,0)
+        return _seed
     
     
-    def _find_central_in(self , ):
-        pass
+    
+        
                 
     
     
@@ -56,5 +65,7 @@ class KMeans(object):
 
 if __name__ == "__main__":
     k = KMeans()
-    print k.cluster(k.rand_seed(3, [1,4,5,2,1,4,9,10]), [1,4,5,2,1,4,9,10])
+    for i in range(1):
+        print i
+    print k.find_central(k.cluster(k.rand_seed(3, [1,4,5,2,1,4,9,10]), [1,4,5,2,1,4,9,10]))
         
