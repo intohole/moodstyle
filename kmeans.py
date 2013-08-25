@@ -3,9 +3,13 @@
 
 from random import randint
 from math import sqrt
+        
 
-        
-        
+'''
+处理数据的格式 [数据1,数据2]
+但是必须要改写 def distance(data1,data2) 数据距离函数
+数据转换格式 {分类:{数据的位置:数据距离}}
+'''       
 class KMeans(object):
     
     def rand_seed(self , k , data):
@@ -23,7 +27,7 @@ class KMeans(object):
     
     def distance(self,data1,data2):
         return abs(data1-data2)
-#         return sqrt((data1[0]-data2[0])*(data1[0]-data2[0])+ (data1[1]-data2[1])*(data1[1]-data2[1]))
+#        return sqrt((data1[0]-data2[0])*(data1[0]-data2[0])+ (data1[1]-data2[1])*(data1[1]-data2[1]))
     
     
     def cluster(self,central,data):
@@ -46,28 +50,39 @@ class KMeans(object):
         for _key,_val in cluster_result.items():
             _central = 0.
             #计算分类中所有距离平均数
-            for _index,_v in _val.items():
+            for _v in _val.values():
                 _central = _central + _v
-            _central = _central / len(_val)
+            _central = _central / len(_val.values())
             #找到平均值，将平均值作为新的中心
             _min = None
             _mindex = _key
             for _index,_v in _val.items():
-                if not _min or _v <_min:
-                    _min = _v
+                if not _min or abs(_v - _central) <_min:
+                    _min = abs(_v - _central)
                     _mindex = _index
             _seed[_mindex] = {}
             _seed[_mindex][_mindex] = 0.
         return _seed
     
+    #对数据进行排序，比较
+    #
     def have_chage(self,oldcluster,clusterresult):
         if len(oldcluster.keys()) == 0:
             return False
-        for  _ov in oldcluster.values():
-            isNotEqual = False
-            for _v in clusterresult.values():
+        old_list = [_val.keys() for _val in oldcluster.values()]
+        cluster_list = [ _val.keys() for _val in clusterresult.values()]
+        old_list.sort()
+        cluster_list.sort()
+        if len(old_list) != len(cluster_list):
+            return False
+        for i in range(len(old_list)):
+            if not (old_list[i] == cluster_list[i]):
+                return False 
+        return True 
+#        for  _ov in oldcluster.values():
+#            isNotEqual = True
+#            for _v in clusterresult.values():
                 
-        return True
                     
                 
     
@@ -75,31 +90,27 @@ class KMeans(object):
         if k >= len(data):
             raise Exception("K is bigger than data")
         _randseed = self.rand_seed(k,data)
+        print _randseed
         isOver = False
         _oldcluster = {}
         while not isOver:
             _cluster = self.cluster(_randseed, data)
-            print _cluster
-            print _oldcluster
             if  self.have_chage(_oldcluster, _cluster):
-                break
+                result = {}
+                count = 1
+                print _cluster
+                for _,_val in _cluster.items():
+                    result[count] = []
+                    for _key in _val.keys():
+                        result[count].append(data[_key])
+                    result[count].sort()
+                    count = count + 1
+                return result
             _oldcluster.clear()
             for _key,_val in _cluster.items():
                 _oldcluster[_key] = _val
-            _cluster = None
-            _randseed = None
             _randseed = self.find_central(_oldcluster)
-        
-        result = {}
-        count = 1
-        for _,_val in _oldcluster.items():
-            result[count] = []
-            for _key in _val.keys():
-                result[count].append(data[_key])
-            count = count + 1
-        return result
-    
-    
+            print _randseed
             
         
         
