@@ -2,7 +2,6 @@
 #!/usr/bin/env python
 
 from random import randint
-from math import sqrt
         
 
 '''
@@ -29,7 +28,9 @@ class KMeans(object):
         return abs(data1-data2)
 #        return sqrt((data1[0]-data2[0])*(data1[0]-data2[0])+ (data1[1]-data2[1])*(data1[1]-data2[1]))
     
-    
+    #聚类
+    #循环每个元素找到距离最近的元素
+    #将元素添加到分类中
     def cluster(self,central,data):
         for i in range(len(data)):
             if i not in central.keys():
@@ -44,7 +45,11 @@ class KMeans(object):
         return central
     
                 
-    
+    #找到每个分类中中心 -> min(abs(每个距离值 - 中心值))
+    #步骤:
+    #   计算分类中的距离 {分类中心的序号:{数据序号:距分类中心距离}}
+    #   找到每个分类元素 离中心最近的元素
+    #   返回分类中心 {}
     def find_central(self,cluster_result):
         _seed = {}
         for _key,_val in cluster_result.items():
@@ -86,16 +91,17 @@ class KMeans(object):
                     
                 
     
-    def k_means(self , k , data):
+    def k_means(self , k , data , times = 100000):
         if k >= len(data):
             raise Exception("K is bigger than data")
         _randseed = self.rand_seed(k,data)
         print _randseed
         isOver = False
         _oldcluster = {}
-        while not isOver:
-            _cluster = self.cluster(_randseed, data)
-            if  self.have_chage(_oldcluster, _cluster):
+        time_count = 0 # 迭代次数 ,
+        while not isOver: 
+            _cluster = self.cluster(_randseed, data) #把每个元素 分到最近的分类中
+            if  self.have_chage(_oldcluster, _cluster) or time_count > times: #是否没有改变 , 或者超过迭代次数 聚类终止条件
                 result = {}
                 count = 1
                 print _cluster
@@ -103,14 +109,14 @@ class KMeans(object):
                     result[count] = []
                     for _key in _val.keys():
                         result[count].append(data[_key])
-                    result[count].sort()
-                    count = count + 1
+                    result[count].sort() #分类中心排序
+                    count = count + 1 #分类元素
                 return result
-            _oldcluster.clear()
+            _oldcluster.clear() #清空数据
             for _key,_val in _cluster.items():
-                _oldcluster[_key] = _val
-            _randseed = self.find_central(_oldcluster)
-            print _randseed
+                _oldcluster[_key] = _val 
+            _randseed = self.find_central(_oldcluster) #找到分类中心 算数中心
+            time_count = time_count + 1 #迭代次数+1
             
         
         
@@ -125,5 +131,5 @@ class KMeans(object):
 
 if __name__ == "__main__":
     k = KMeans()
-    print k.k_means(2, [1,4,5,2 ,100,16,8,9,10,101,150,1555,177,120,14,4,5])
+    print k.k_means(3, [1,4,5,2 ,100,16,8,9,10,101,150,1555,177,120,14,4,5,99])
         
