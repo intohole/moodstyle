@@ -50,9 +50,9 @@ class KMeans(object):
         for _key,_val in cluster_result.items():
             _central = 0.
             #计算分类中所有距离平均数
-            for _index,_v in _val.items():
+            for _v in _val.values():
                 _central = _central + _v
-            _central = _central / len(_val)
+            _central = _central / len(_val.values())
             #找到平均值，将平均值作为新的中心
             _min = None
             _mindex = _key
@@ -97,6 +97,7 @@ class KMeans(object):
             if  self.have_chage(_oldcluster, _cluster):
                 result = {}
                 count = 1
+                print _cluster
                 for _,_val in _cluster.items():
                     result[count] = []
                     for _key in _val.keys():
@@ -123,5 +124,5 @@ class KMeans(object):
 
 if __name__ == "__main__":
     k = KMeans()
-    print k.k_means(4, [(1,4),(5,2) ,(100,16),(8,9),(10,101),(150,1555),(150,1555),(192,789),(177,120),(14,4),(5,7),(1000,1000),(1,4),(5,2) ,(100,16),(8,9),(10,101),(150,1555),(150,1555),(192,789),(177,120),(14,4),(5,7),(1000,1000)])
+    print k.k_means(2, [(1,4),(5,2) ,(100,16),(8,9),(10,101),(150,1555),(150,1555),(192,789),(177,120),(14,4),(5,7),(1000,1000),(1,4),(5,2) ,(100,16),(8,9),(10,101),(150,1555),(150,1555),(192,789),(177,120),(14,4),(5,7),(1000,1000)])
         
