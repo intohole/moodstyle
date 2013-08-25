@@ -33,16 +33,16 @@ class KMeans(object):
     #将元素添加到分类中
     def cluster(self,central,data):
         for i in range(len(data)):
-            if i not in central.keys():
-                _min_value = None
-                _index = None
-                for _key in central.keys():
-                    _dis = self.distance(data[_key], data[i])
-                    if not _min_value or _dis < _min_value:
+            if i not in central.keys(): #分组中心肯定不能分到其它类别 所以跳过
+                _min_value = None #最小值
+                _index = None #最小值的数据位置
+                for _key in central.keys(): #循环每个分类中心
+                    _dis = self.distance(data[_key], data[i]) #计算距离
+                    if not _min_value or _dis < _min_value: #如果第一次 或者 距离小于最小值 ,记录
                         _index = _key
                         _min_value = _dis
-                central[_index][i] = _min_value
-        return central
+                central[_index][i] = _min_value #保存最小距离 , 方便 find_central计算
+        return central #返回新聚类中心
     
                 
     #找到每个分类中中心 -> min(abs(每个距离值 - 中心值))
@@ -72,21 +72,18 @@ class KMeans(object):
     #对数据进行排序，比较
     #
     def have_chage(self,oldcluster,clusterresult):
-        if len(oldcluster.keys()) == 0:
-            return False
-        old_list = [_val.keys() for _val in oldcluster.values()]
-        cluster_list = [ _val.keys() for _val in clusterresult.values()]
-        old_list.sort()
-        cluster_list.sort()
-        if len(old_list) != len(cluster_list):
-            return False
-        for i in range(len(old_list)):
-            if not (old_list[i] == cluster_list[i]):
-                return False 
-        return True 
-#        for  _ov in oldcluster.values():
-#            isNotEqual = True
-#            for _v in clusterresult.values():
+        if len(oldcluster.keys()) == 0: #第一次时,则返回
+            return True
+        old_list = [_val.keys() for _val in oldcluster.values()] #将数据位置提出
+        cluster_list = [ _val.keys() for _val in clusterresult.values()] 
+        old_list.sort() #排序
+        cluster_list.sort() 
+        if len(old_list) != len(cluster_list): #如果长度不同肯定是不同的
+            return True
+        for i in range(len(old_list)): 
+            if not (old_list[i] == cluster_list[i]): #如果结果不同
+                return True  #则是有改变的
+        return False
                 
                     
                 
@@ -101,7 +98,7 @@ class KMeans(object):
         time_count = 0 # 迭代次数 ,
         while not isOver: 
             _cluster = self.cluster(_randseed, data) #把每个元素 分到最近的分类中
-            if  self.have_chage(_oldcluster, _cluster) or time_count > times: #是否没有改变 , 或者超过迭代次数 聚类终止条件
+            if  not self.have_chage(_oldcluster, _cluster) or time_count > times: #是否没有改变 , 或者超过迭代次数 聚类终止条件
                 result = {}
                 count = 1
                 print _cluster
