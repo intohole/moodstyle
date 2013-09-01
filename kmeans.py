@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 
 from random import randint
-        
+import  re
 
 '''
 处理数据的格式 [数据1,数据2]
@@ -83,7 +83,7 @@ class KMeans(object):
         for i in range(len(old_list)): 
             if not (old_list[i] == cluster_list[i]): #如果结果不同
                 return True  #则是有改变的
-        return False
+        return False #
                 
                     
                 
