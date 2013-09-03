@@ -2,7 +2,11 @@
 #!/usr/bin/env python
 
 from random import randint
+<<<<<<< HEAD:clusterutils/kmeans.py
 from math import sqrt        
+=======
+import  re
+>>>>>>> d0a83c9d3a2ecc3d207d5d89fea99284bde910d0:kmeans.py
 
 '''
 处理数据的格式 [数据1,数据2]
@@ -83,7 +87,7 @@ class KMeans(object):
         for i in range(len(old_list)): 
             if not (old_list[i] == cluster_list[i]): #如果结果不同
                 return True  #则是有改变的
-        return False
+        return False #
                 
                     
                 
