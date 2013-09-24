@@ -2,6 +2,7 @@
 #!/usr/bin/env python
 
 from random import randint
+from math import sqrt        
 import  re
 
 '''
@@ -25,8 +26,8 @@ class KMeans(object):
     
     
     def distance(self,data1,data2):
-        return abs(data1-data2)
-#        return sqrt((data1[0]-data2[0])*(data1[0]-data2[0])+ (data1[1]-data2[1])*(data1[1]-data2[1]))
+#         return abs(data1-data2)
+        return sqrt((data1[0]-data2[0])*(data1[0]-data2[0])+ (data1[1]-data2[1])*(data1[1]-data2[1]))
     
     #聚类
     #循环每个元素找到距离最近的元素
@@ -92,16 +93,15 @@ class KMeans(object):
         if k >= len(data):
             raise Exception("K is bigger than data")
         _randseed = self.rand_seed(k,data)
-        print _randseed
         isOver = False
         _oldcluster = {}
         time_count = 0 # 迭代次数 ,
         while not isOver: 
             _cluster = self.cluster(_randseed, data) #把每个元素 分到最近的分类中
+            print 1
             if  not self.have_chage(_oldcluster, _cluster) or time_count > times: #是否没有改变 , 或者超过迭代次数 聚类终止条件
                 result = {}
                 count = 1
-                print _cluster
                 for _,_val in _cluster.items():
                     result[count] = []
                     for _key in _val.keys():
@@ -128,5 +128,6 @@ class KMeans(object):
 
 if __name__ == "__main__":
     k = KMeans()
-    print k.k_means(3, [1,4,5,2 ,100,16,8,9,10,101,150,1555,177,120,14,4,5,99])
+    print k.k_means(4, [(1,4),(5,2) ,(100,16),(8,9),(10,101),(150,1555),(177,120),(14,4),(5,99)])
+
         

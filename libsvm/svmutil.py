@@ -2,6 +2,7 @@
 
 import os, sys
 sys.path = [os.path.dirname(os.path.abspath(__file__))] + sys.path 
+sys.path.append(".")
 from svm import *
 
 def svm_read_problem(data_file_name):
