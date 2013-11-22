@@ -2,6 +2,19 @@
 # coding=utf-8
 
 
+
+#obs 观察序列 tuple
+#states 隐藏序列 tuple
+#start_p 初始概率 dict
+#trans_p 状态转换概率 dict
+#emit_p 序列在状态时概率
+#look it from http://zh.wikipedia.org/wiki/%E7%BB%B4%E7%89%B9%E6%AF%94%E7%AE%97%E6%B3%95
+#
+#当前事件发生概率 基于向前的概率——》 取到最大值 
+#
+#
+#shi 
+
 def viterbi(obs, states, start_p, trans_p, emit_p):
     V = [{}]
     path = {}
@@ -25,7 +38,11 @@ def viterbi(obs, states, start_p, trans_p, emit_p):
 
 
 if __name__ == '__main__':
-    states = ('Healthy', 'Fever')
+	#
+	#
+	#
+
+    states = ('Healthy', 'Fever') 
 
     observations = ('normal', 'cold', 'dizzy')
 
