@@ -121,7 +121,7 @@ class TextFeature(object):
         for doc_type, word_score in doc_word_score_map.items():
             sorted_x = sorted(
                 word_score.iteritems(),  key=lambda x : x[1], reverse=True)
-            doc_word_score_map[doc_type] = [word[0] for word in sorted_x]
+            doc_word_score_map[doc_type] = [word[0] for word in sorted_x][0:top_word]
         return doc_word_score_map
 
 
@@ -142,6 +142,6 @@ if __name__ == '__main__':
     contents = []
     with open('/home/lixuze/fenlei/type_file.txt') as f:
         contents = [line.strip() for line in f.readlines()]
-    for doc_type , word_list in s.extract_feature_from_contents(100, contents).items():
+    for doc_type , word_list in s.extract_feature_from_contents(20, contents).items():
     	print doc_type
     	print ' '.join(word_list)
