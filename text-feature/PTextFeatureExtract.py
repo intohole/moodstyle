@@ -114,7 +114,7 @@ class TextFeature(object):
             doc_word_score_map[doc_type] = {}
         for word in doc.get_word_set():
             for doc_type in doc.get_type_set():
-                #现在简单的滤除低词频
+                # 现在简单的滤除低词频
                 if doc.get_type_word_count(doc_type, word) < long(doc.get_doc_count(doc_type) * self.filter_rate):
                     continue
                 score = self.text_feature_score(doc.get_type_word_count(
@@ -142,7 +142,7 @@ class IM(TextFeature):
     '''
 
     def text_feature_score(self, doc_word_count, doc_count, word_count, doc_sum):
-        return math.log(float(doc_sum * doc_word_count) / float(doc_count * word_count))
+        return math.log(float(doc_sum * doc_word_count) / float(doc_count * word_count), 2)
 
 
 class CHI(TextFeature):
@@ -164,19 +164,30 @@ class DF(TextFeature):
     MAX_FILTER = 0.006
 
     def text_feature_score(self, doc_word_count, doc_count, word_count, doc_sum):
-        if float(doc_word_count) / float(doc_count) > self.MAX_FILTER: #去除一定的高词频
+        #去除一定的高词频
+        if float(doc_word_count) / float(doc_count) > self.MAX_FILTER:
             return 0.
         return float(doc_word_count) / float(doc_count)
 
 
+class WLLR(TextFeature):
+
+    def text_feature_score(self, doc_word_count, doc_count, word_count, doc_sum):
+        if word_count == doc_word_count:
+            return 1. # 如果这个词只存在这个文本类别中，而且高过一定词频 是否要认为这个词具有代表性呢？ 我实验了一下 确实可以代表 但是我的文本类别真的具有可行性吗 这里应该是多少 1 or 0
+        __A = float(doc_word_count) / float(doc_count)
+        __B = math.log(float(doc_word_count * (doc_sum - doc_count)) / float((word_count - doc_word_count) * doc_count))
+        return __A * __B
+
+
 class IG(TextFeature):
-    #信息增益
+    # 信息增益
 
     pass
 
 
 if __name__ == '__main__':
-    s = DF()
+    s = WLLR()
     contents = []
     with open('/home/lixuze/fenlei/type_file.txt') as f:
         contents = [line.strip() for line in f.readlines()]
