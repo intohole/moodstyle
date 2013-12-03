@@ -145,11 +145,8 @@ class IM(TextFeature):
     '''
 
     def text_feature_score(self, doc_word_count, doc_count, word_count, doc_sum):
-<<<<<<< HEAD
-        return math.log(float(doc_sum * doc_word_count) / float(doc_count * word_count))
-=======
+
         return math.log(float(doc_sum * doc_word_count) / float(doc_count * word_count), 2)
->>>>>>> f633ac73cae73b43d1940999774762859a8dc7e6
 
 
 class CHI(TextFeature):
