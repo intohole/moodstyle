@@ -9,7 +9,7 @@ def text_extract(line , word_count = 2 , type_split = '    ' ,  word_split = ' '
        lineArry = line.split(type_split)
        if len(lineArry) == 2:
            word_arry = lineArry[1].split(word_split)
-           return ['%s ' % ' '.join(word_arry[i : i + word_count]) for i in range(len(word_arry) - word_count)]
+           return [' '.join(word_arry[i : i + word_count]) for i in range(len(word_arry) - word_count)]
        else:
             raise TypeError
 
