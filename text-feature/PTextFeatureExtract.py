@@ -28,7 +28,7 @@ class Document(object):
 
     def get_word_count(self, word):
         if not (word and isinstance(word, (str, unicode))):
-            raise TypeError, 'word must be is str or unicode'
+            raise TypeError, 'word must be is str or unicode : %s' % word
         count = 0
         if self.__doc.has_key(word):
             for _key, _val in self.__doc[word].items():
@@ -91,25 +91,38 @@ class ITextFeatureScore(object):
 # word_count))
 
 
-class TextFeature(object):
+class CreateDocument(object):
 
-    def __init__(self, min_word_count = 0 , filter_rate=0.003):
-        # if text_feature_score and hasattr(text_feature_score,'feature_socre' ):
-        #     raise TypeError
-        self.filter_rate = filter_rate
-        self.min_word_count = min_word_count
 
-    def insert_document_list(self, contents):
+    def insert_document_list(self , contents , word_term):
         doc = Document()
         for line in contents:
             lineInfo = line.split('\t')
             if len(lineInfo) >= 2:
-                word_set = set(lineInfo[1].split(" "))
+                word_list = lineInfo[1].split(" ")
+                word_set = set()
+                for i in range(len(word_list) - word_term):
+                    __word = []
+                    for j in range(i,word_term):
+                        __word.append(word_list[j])
+                word_set.add(' '.join(__word))
+                print ' '.join(__word)
                 doc.insert_document(lineInfo[0], word_set)
         return doc
 
+class TextFeature(object):
+
+    def __init__(self, word_term = 1 ,min_word_count = 0 , filter_rate=0.003):
+        # if text_feature_score and hasattr(text_feature_score,'feature_socre' ):
+        #     raise TypeError
+        self.filter_rate = filter_rate
+        self.min_word_count = min_word_count
+        self.split_word = CreateDocument()
+        self.word_term = word_term
+
+
     def extract_feature_from_contents(self, top_word, contents):
-        doc = self.insert_document_list(contents)
+        doc = self.split_word.insert_document_list(contents,self.word_term)
         doc_word_score_map = {}  # 文档 ——》 词 ——》分值
         for doc_type in doc.get_type_set():  # 初始化 分值dict 这样不用下面判断
             doc_word_score_map[doc_type] = {}
