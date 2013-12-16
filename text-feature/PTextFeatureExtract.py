@@ -93,43 +93,42 @@ class ITextFeatureScore(object):
 
 class CreateDocument(object):
 
-
-    def insert_document_list(self , contents , word_term):
+    def insert_document_list(self, contents , word_term = 1 , type_split = '\t' , word_split = ' '):
         doc = Document()
         for line in contents:
-            lineInfo = line.split('\t')
+            lineInfo = line.split(type_split)
             if len(lineInfo) >= 2:
-                word_list = lineInfo[1].split(" ")
-                word_set = set()
-                for i in range(len(word_list) - word_term):
-                    __word = []
-                    for j in range(i,word_term):
-                        __word.append(word_list[j])
-                word_set.add(' '.join(__word))
-                print ' '.join(__word)
-                doc.insert_document(lineInfo[0], word_set)
+                doc.insert_document(lineInfo[0], self.text_extract(lineInfo[1] , word_term , word_split))
         return doc
+
+    #提取句子的几元文法  
+    def text_extract(self, line, word_count=2,  word_split=' '):
+        if line and isinstance(line, (str, unicode)):
+            lineArry = [word.strip()
+                        for word in line.split(word_split) if word.strip() != '']
+            return [' '.join(lineArry[i: i + word_count]) for i in range(len(lineArry) - word_count)]
+        else:
+            raise TypeError
+
 
 class TextFeature(object):
 
-    def __init__(self, word_term = 1 ,min_word_count = 0 , filter_rate=0.003):
+    def __init__(self,  min_word_count=0, filter_rate=0.003):
         # if text_feature_score and hasattr(text_feature_score,'feature_socre' ):
         #     raise TypeError
         self.filter_rate = filter_rate
         self.min_word_count = min_word_count
         self.split_word = CreateDocument()
-        self.word_term = word_term
 
-
-    def extract_feature_from_contents(self, top_word, contents):
-        doc = self.split_word.insert_document_list(contents,self.word_term)
+    def extract_feature_from_contents(self, top_word , contents , word_term = 1):
+        doc = self.split_word.insert_document_list(contents, word_term)
         doc_word_score_map = {}  # 文档 ——》 词 ——》分值
         for doc_type in doc.get_type_set():  # 初始化 分值dict 这样不用下面判断
             doc_word_score_map[doc_type] = {}
         for word in doc.get_word_set():
             for doc_type in doc.get_type_set():
                 word_count_doc = doc.get_type_word_count(doc_type, word)
-                #现在简单的滤除低词频
+                # 现在简单的滤除低词频
                 if word_count_doc <= self.min_word_count or word_count_doc < long(doc.get_doc_count(doc_type) * self.filter_rate):
 
                     continue
@@ -172,7 +171,6 @@ class CHI(TextFeature):
         return (float((__A * __D - __B * __C) * (__A * __D - __B * __C)) / float(word_count * (doc_sum - word_count)))
 
 
-
 class DF(TextFeature):
 
     '''
@@ -182,7 +180,7 @@ class DF(TextFeature):
     MAX_FILTER = 0.006
 
     def text_feature_score(self, doc_word_count, doc_count, word_count, doc_sum):
-        #去除一定的高词频
+        # 去除一定的高词频
         if float(doc_word_count) / float(doc_count) > self.MAX_FILTER:
             return 0.
         return float(doc_word_count) / float(doc_count)
@@ -192,9 +190,11 @@ class WLLR(TextFeature):
 
     def text_feature_score(self, doc_word_count, doc_count, word_count, doc_sum):
         if word_count == doc_word_count:
-            return 1. # 如果这个词只存在这个文本类别中，而且高过一定词频 是否要认为这个词具有代表性呢？ 我实验了一下 确实可以代表 但是我的文本类别真的具有可行性吗 这里应该是多少 1 or 0
+            # 如果这个词只存在这个文本类别中，而且高过一定词频 是否要认为这个词具有代表性呢？ 我实验了一下 确实可以代表 但是我的文本类别真的具有可行性吗 这里应该是多少 1 or 0
+            return 1.
         __A = float(doc_word_count) / float(doc_count)
-        __B = math.log(float(doc_word_count * (doc_sum - doc_count)) / float((word_count - doc_word_count) * doc_count))
+        __B = math.log(float(doc_word_count * (doc_sum - doc_count))
+                       / float((word_count - doc_word_count) * doc_count))
         return __A * __B
 
 
@@ -205,10 +205,12 @@ class IG(TextFeature):
 
 
 if __name__ == '__main__':
+    # print CreateDocument().text_extract('我 我 哎 哎 值')
     s = WLLR()
     contents = []
-    with open('/home/lixuze/project/feature_fenlei/fenlei/all.txt') as f:
+    with open('/home/lixuze/fenlei/all.txt') as f:
         contents = [line.strip() for line in f.readlines()]
-    for doc_type, word_list in s.extract_feature_from_contents(100, contents).items():
+    for doc_type, word_list in s.extract_feature_from_contents(100, contents , 2).items():
         print doc_type
-        print ' '.join(word_list)
+        for i in word_list:
+            print i 

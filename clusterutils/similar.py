@@ -10,14 +10,12 @@ def toVector(words1,words2):
     wordVector1 = {}
     wordVector2 = {}
     for word in words1.split(" "):
-        print word
         wordmap[word] = 1
         if wordVector1.has_key(word):
             wordVector1[word] = wordVector1[word] + 1
         else:
             wordVector1[word] = 1
     for word in words2.split(" "):
-        print word
         wordmap[word] = 1
         if wordVector2.has_key(word):
             wordVector2[word] = wordVector2[word] + 1
@@ -52,7 +50,3 @@ def similar(words1,words2):
 
 if __name__ == "__main__":
     print similar("我 不 爱 他妈 哈 哈 哈", "我 爱 天安门 ming 哈 哈 哈")
-    for i in "我爱天马":
-        print i
-         
-        
