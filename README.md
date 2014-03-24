@@ -14,7 +14,7 @@ PTextFeatureExtract
 ----------------------------------
 :::python
 
-                    from PTextFeatureExtract import *  
+                    from textfeature.PTextFeatureExtract import *  
                     text_feature_extract = IM() #基于互信息 可选择种类为：CHI () DF WLLR  
                     contents = []  
                     with open('/home/xxxx/fenlei/all.txt') as f:  
@@ -30,6 +30,7 @@ clusterutils/kmeans.py
 基于kmeans分类算法实现   
 :::python
 
+              from clusterutils.kmeans import KMeans
               k = KMeans() #但是要继承 def distance(self,data1,data2)： 计算分类距离   
               print k.k_means(4, [(1,4),(5,2) ,(100,16),(8,9),(10,101),(150,1555),(177,120),(14,4),(5,99)])  
 
@@ -39,6 +40,7 @@ clusterutils/levenshtein.py
 字符串编辑距离 及字符串相似度  
 :::python
 
+             from clusterutils.Levenshtein import *
              str_similarity('asds', 'acbccc')  # 0.17  
 
 clusterutils/similar.py  
@@ -46,6 +48,7 @@ clusterutils/similar.py
 两个（句子，段落）之间相似度    
 :::python
 
+             from clusterutils.similar import *
              print similar("我 不 爱 他妈 哈 哈 哈", "我 爱 天安门 ming 哈 哈 哈") # 0.846153846154 两个句子向量相似度  
 
 
