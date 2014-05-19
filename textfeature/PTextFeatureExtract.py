@@ -13,11 +13,17 @@ class Document(object):
     """
 
     def __init__(self):
-        self.__doc = {}
+        self.__doc = {}　#所有词的ｓｅｔ
         self.doc_count = 0  # 文档数目
-        self.__type_count = {}
+        self.__type_count = {} #　ｗｏｒｄ　-> 分类类别　-> 数目
 
     def insert_document(self, doc_type, document={}):
+        '''
+        插入一个ｄｏｃ
+        doc_type (str , unicode ) 分类名称
+        document (set) 一个文档所含有不重复词
+        抛出异常　TypeError 
+        '''
         if not isinstance(document, (set, list)):
             raise TypeError, 'document  must is list or set'
         for word in document:
@@ -27,6 +33,11 @@ class Document(object):
     # 获得word在所有文档的总数量
 
     def get_word_count(self, word):
+        '''
+        获得一个词在所有分类中的数目
+        word -> (str , unicode)
+
+        '''
         if not (word and isinstance(word, (str, unicode))):
             raise TypeError, 'word must be is str or unicode : %s' % word
         count = 0
@@ -42,6 +53,11 @@ class Document(object):
         self.__type_count[doc_type] = count
 
     def get_type_word_count(self, doc_type, word):
+        '''
+        得到某个分类下　，　ｗｏｒｄ数目
+        doc_type 分类名称
+        word 词
+        '''
         if self.__doc.has_key(word):
             if self.__doc[word].has_key(doc_type):
                 return self.__doc[word][doc_type]
@@ -57,14 +73,25 @@ class Document(object):
         self.__doc[word][doc_type] = __value
 
     def get_doc_count(self, doc_type):
-        if self.__type_count.has_key(doc_type):
-            return self.__type_count[doc_type]
+        '''
+        某个分类的文档数目
+        doc_type
+        '''
+        if doc_type and isinstance(doc_type , (str , unicode)):
+            if self.__type_count.has_key(doc_type):
+                return self.__type_count[doc_type]
         return 0
 
     def get_word_set(self):
+        '''
+        得到所有词的ｓｅｔ
+        '''
         return self.__doc.keys()
 
     def get_type_set(self):
+        '''
+        得到所有分类类别
+        '''
         return self.__type_count.keys()
 
 
@@ -92,16 +119,17 @@ class ITextFeatureScore(object):
 
 
 class CreateDocument(object):
+    doc = Document()
 
-    def insert_document_list(self, contents , word_term = 1 , type_split = '\t' , word_split = ' '):
-        doc = Document()
-        for line in contents:
-            lineInfo = line.split(type_split)
-            if len(lineInfo) >= 2:
-                doc.insert_document(lineInfo[0], self.text_extract(lineInfo[1] , word_term , word_split))
-        return doc
+    def insert_document_list(self, doc_name, contents, word_term=1, word_split=' '):
+        if doc_name and len(doc_name) > 0:
+            if contents and isinstance(contents, (list, tuple)) and len(contents) > 0:
+                for line in contents:
+                    self.doc.insert_document(
+                        doc_name, self.text_extract(lineInfo[1], word_term, word_split))
+        raise TypeError, 'doc_name is string and contents is list or tuple which element is string or unicode!'
+    # 提取句子的几元文法
 
-    #提取句子的几元文法  
     def text_extract(self, line, word_count=2,  word_split=' '):
         if line and isinstance(line, (str, unicode)):
             lineArry = [word.strip()
@@ -114,14 +142,12 @@ class CreateDocument(object):
 class TextFeature(object):
 
     def __init__(self,  min_word_count=0, filter_rate=0.003):
-        # if text_feature_score and hasattr(text_feature_score,'feature_socre' ):
-        #     raise TypeError
         self.filter_rate = filter_rate
         self.min_word_count = min_word_count
-        self.split_word = CreateDocument()
+        self.createdoc = CreateDocument()
 
-    def extract_feature_from_contents(self, top_word , contents , word_term = 1):
-        doc = self.split_word.insert_document_list(contents, word_term)
+    def extract_feature_from_contents(self, top_word=0.01):
+        doc = self.createdoc.doc
         doc_word_score_map = {}  # 文档 ——》 词 ——》分值
         for doc_type in doc.get_type_set():  # 初始化 分值dict 这样不用下面判断
             doc_word_score_map[doc_type] = {}
@@ -138,8 +164,9 @@ class TextFeature(object):
         for doc_type, word_score in doc_word_score_map.items():  # 对所有按照分值大小排序
             sorted_x = sorted(
                 word_score.iteritems(),  key=lambda x: x[1], reverse=True)
+            get_top = len(sorted_x) * top_word
             doc_word_score_map[doc_type] = [word[0]
-                                            for word in sorted_x][0:top_word]
+                                            for word in sorted_x][0:get_top]
         return doc_word_score_map
 
     def text_feature_score(self, doc_word_count, doc_count, word_count, doc_sum):
@@ -190,7 +217,8 @@ class WLLR(TextFeature):
 
     def text_feature_score(self, doc_word_count, doc_count, word_count, doc_sum):
         if word_count == doc_word_count:
-            # 如果这个词只存在这个文本类别中，而且高过一定词频 是否要认为这个词具有代表性呢？ 我实验了一下 确实可以代表 但是我的文本类别真的具有可行性吗 这里应该是多少 1 or 0
+            # 如果这个词只存在这个文本类别中，而且高过一定词频 是否要认为这个词具有代表性呢？ 我实验了一下 确实可以代表
+            # 但是我的文本类别真的具有可行性吗 这里应该是多少 1 or 0
             return 1.
         __A = float(doc_word_count) / float(doc_count)
         __B = math.log(float(doc_word_count * (doc_sum - doc_count))
@@ -204,13 +232,3 @@ class IG(TextFeature):
     pass
 
 
-if __name__ == '__main__':
-    # print CreateDocument().text_extract('我 我 哎 哎 值')
-    s = WLLR()
-    contents = []
-    with open('/home/lixuze/fenlei/all.txt') as f:
-        contents = [line.strip() for line in f.readlines()]
-    for doc_type, word_list in s.extract_feature_from_contents(100, contents , 2).items():
-        print doc_type
-        for i in word_list:
-            print i 
