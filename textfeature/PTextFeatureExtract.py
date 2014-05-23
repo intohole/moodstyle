@@ -126,7 +126,10 @@ class CreateDocument(object):
             if contents and isinstance(contents, (list, tuple)) and len(contents) > 0:
                 for line in contents:
                     self.doc.insert_document(
-                        doc_name, self.text_extract(lineInfo[1], word_term, word_split))
+                        doc_name, self.text_extract(line, word_term, word_split))
+            else if isinstance(contents , (str , unicode)):
+                self.doc.insert_document(doc_name , self.text_extract(lien , word_term , word_split))
+            return
         raise TypeError, 'doc_name is string and contents is list or tuple which element is string or unicode!'
     # 提取句子的几元文法
 
