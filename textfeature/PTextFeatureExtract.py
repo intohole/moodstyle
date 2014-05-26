@@ -137,7 +137,7 @@ class CreateDocument(object):
         if line and isinstance(line, (str, unicode)):
             lineArry = [word.strip()
                         for word in line.split(word_split) if word.strip() != '']
-            return [' '.join(lineArry[i: i + word_count]) for i in range(len(lineArry) - word_count)]
+            return [' '.join(lineArry[i: i + word_count]) for i in range(len(lineArry) - 1)]
         else:
             raise TypeError
 
