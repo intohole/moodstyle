@@ -33,6 +33,12 @@ class NaiveBayes(Classify):
     __cc = 0
     __attr = None
     __split = re.compile('[ \t\r\n]+').split
+    __model = None
+
+
+    def __init__(self , model = None):
+        self.__model = model
+        
 
     def train(self, **kw):
         if len(kw) < 0:

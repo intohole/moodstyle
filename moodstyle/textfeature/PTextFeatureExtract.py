@@ -13,9 +13,9 @@ class Document(object):
     """
 
     def __init__(self):
-        self.__doc = {}　#所有词的ｓｅｔ
+        self.__doc = {}  # 所有词的ｓｅｔ
         self.doc_count = 0  # 文档数目
-        self.__type_count = {} #　ｗｏｒｄ　-> 分类类别　-> 数目
+        self.__type_count = {}  # 　ｗｏｒｄ　-> 分类类别　-> 数目
 
     def insert_document(self, doc_type, document={}):
         '''
@@ -77,7 +77,7 @@ class Document(object):
         某个分类的文档数目
         doc_type
         '''
-        if doc_type and isinstance(doc_type , (str , unicode)):
+        if doc_type and isinstance(doc_type, (str, unicode)):
             if self.__type_count.has_key(doc_type):
                 return self.__type_count[doc_type]
         return 0
@@ -127,8 +127,9 @@ class CreateDocument(object):
                 for line in contents:
                     self.doc.insert_document(
                         doc_name, self.text_extract(line, word_term, word_split))
-            else if isinstance(contents , (str , unicode)):
-                self.doc.insert_document(doc_name , self.text_extract(lien , word_term , word_split))
+            elif isinstance(contents, (str, unicode)):
+                self.doc.insert_document(
+                    doc_name, self.text_extract(line, word_term, word_split))
             return
         raise TypeError, 'doc_name is string and contents is list or tuple which element is string or unicode!'
     # 提取句子的几元文法
@@ -144,13 +145,11 @@ class CreateDocument(object):
 
 class TextFeature(object):
 
-    def __init__(self,  min_word_count=0, filter_rate=0.003):
+    def __init__(self, min_word_count=0, filter_rate=0.003):
         self.filter_rate = filter_rate
         self.min_word_count = min_word_count
-        self.createdoc = CreateDocument()
 
-    def extract_feature_from_contents(self, top_word=0.01):
-        doc = self.createdoc.doc
+    def extract_feature(self, doc, top_word=0.01):
         doc_word_score_map = {}  # 文档 ——》 词 ——》分值
         for doc_type in doc.get_type_set():  # 初始化 分值dict 这样不用下面判断
             doc_word_score_map[doc_type] = {}
@@ -169,7 +168,7 @@ class TextFeature(object):
                 word_score.iteritems(),  key=lambda x: x[1], reverse=True)
             get_top = len(sorted_x) * top_word
             doc_word_score_map[doc_type] = [word[0]
-                                            for word in sorted_x][0:get_top]
+                                            for word in sorted_x][0:int(get_top)]
         return doc_word_score_map
 
     def text_feature_score(self, doc_word_count, doc_count, word_count, doc_sum):
@@ -233,5 +232,6 @@ class IG(TextFeature):
     # 信息增益
 
     pass
+
 
 
