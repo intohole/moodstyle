@@ -34,7 +34,7 @@ class CreateDoc(object):
             items = []
             for line in content:
                 if line and len(line):
-                    for __i in range(self.__min_split, self.__max_split):
+                    for __i in range(self.__min_split, self.__max_split + 1):
                         items.extend(self.__gram(line, __i))
             self.doc.insert_document(type_name, items)
 
@@ -48,24 +48,23 @@ class CreateDoc(object):
 if __name__ == '__main__':
     import os
     root = '/home/lixuze/Data/ClassFile'
-    create = CreateDoc(min_split = 2 , max_split = 4)
+    create = CreateDoc(min_split = 2 , max_split = 2)
     count = 1
     for d in os.listdir(root):
-        if count >= 9000:
-            break
+        
 
         for f in os.listdir('%s/%s' % (root, d)):
             with open('%s/%s/%s' % (root, d, f)) as f:
                 create.insert_doc(
                     d, ''.join([line.strip() for line in f.readlines()]))
-            if count % 4500 == 0:
-                count = count + 1
-                break
+            # if count % 4000 == 0:
+            #     count = count + 1
+            #     break
             count = count + 1
             print count
 
 
-    im = IM(filter_rate = 0.004)
+    im = IM(filter_rate = 0.0015)
     sc = im.extract_feature(create.doc)
     for __key, __val in sc.items():
         f = open('/home/lixuze/%s' % __key, 'w')
