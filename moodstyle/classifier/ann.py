@@ -16,37 +16,77 @@ a = [1, 1 , 1 ]
 step = 0.1
 
 
-def sigmod(x):
-    return 1 / (1 + exp(x))
 
-def cal1(x1 , x2):
-    global a
-    z =1 / (1 + exp( -(a[0] * x1 + a[1] * x2 ) ) )
-    if z > 0.5 :
-        return 1
-    else:
-        return 0
+class Logistic(object):
 
-def update(x1, x2, label):
-    global a
-    z = cal1(x1 , x2)
-    a[0] = a[0] + step * (- z + label) * x1
-    a[1] = a[1] + step * (- z +label) * x2
+    __weights = None
+    __datalen = 0
+    __rate = 0.01
 
-def cal(x1 , x2):
-    return x1 * a[0] + x2 * a[1] + a[2]
+    def __init__(self , rate = 0.01):
+        if rate:
+            if isinstance(rate , float):
+                if rate > 0 :
+                    self.__rate = rate
+
+
+    def __sigmod(self , x):
+        return 1 / (1 + exp(-x))
+
+
+    def __initweights(self , l):
+        if not self.__weights:
+            if l and isinstance(l , int ) and l > 0:
+                self.__weights = []
+                [self.__weights.append(1) for i in range(l)]
+                self.__datalen = l
+                return 
+            raise TypeError , '数组长度不正确　必须是整数'
+
+
+
+    def train(self , datas):
+        if datas:
+            if isinstance(datas , (list , tuple)):
+                for i in range(len(datas)):
+                    self.update(data[i][0] , data[i][1])
+
+    def update(self , data , label):
+        if data:
+            if isinstance(data , (tuple , list)):
+                self.__initweights(len(data))
+                for i in range(self.__datalen):
+                    self.__weights[i] = self.__weights[i] + self.__rate * (label - self.predict(data)) * data[i]
+
+
+    def predict( self , data):
+        if self.__predict(data) > 0.5:
+            return 1
+        else:
+            return 0
+
+    def __predict(self , data):
+        if data:
+            if isinstance(data , (list , tuple)):
+                __x = 0.
+                for i in range(self.__datalen):
+                    __x += data[i] * self.__weights[i]
+                return self.__sigmod(__x)
+
+
+lg = Logistic()
     
 
 
-for i in range(2000000):
+for i in range(20000):
     if i % 2 == 0:
-        update(-random() * 10, - random() * 10, 0)
-        update(-random() * 10,  random() * 10, 0)
+        lg.update([-random() * 20, - random() * 20] , 0)
+        lg.update([-random() * 20, random() * 20] , 0)
     else:
-        update(random() * 10, random() * 10, 1)
-        update(random() * 10, -random() * 10, 1)
+        lg.update([random() * 20, random() * 20], 1)
+        lg.update([random() * 20, - random() * 20] , 1)
 print a
-print cal1(-0.5 , 1)
-print cal1(200 ,100)
-print cal1(1000 , 2000)
-print cal1(4500,-4500)
+print lg.predict([-0.5 , 1])
+print lg.predict((20 ,10))
+print lg.predict((10 , 20))
+print lg.predict((4,-4.5))
