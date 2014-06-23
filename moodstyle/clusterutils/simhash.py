@@ -1,4 +1,4 @@
-# coding=gbk
+# coding=utf-8
 #!/usr/bin/env python
 
 
@@ -32,8 +32,8 @@ class SimHash(object):
                     if not self.__word_hash.has_key(word):
                         self.__word_hash[word] = self.hash(word)
                     wm[self.__word_hash[word]] += 1
-                hash_arry = [0 for i in range(64)]
-                for __hash , __weight in wm.items():
+                hash_arry = [0 for i in range(64)] #所有ｈａｓｈ值相加减数组
+                for __hash , __weight in wm.items():　#循环数组　权重
                     self.__array_add(hash_arry , self.__toarry(__hash , __weight))
                 return self.__toint(hash_arry) #转换为数字
 
@@ -60,6 +60,10 @@ class SimHash(object):
         return __hash
 
     def hash(self, word):
+        '''
+        对字符串ｈａｓｈ作用
+
+        '''
         if word:
             if isinstance(word, (str, unicode)):
                 return hash(word)
@@ -67,7 +71,9 @@ class SimHash(object):
 
     @staticmethod
     def distance(sh1 , sh2):
-        h = sh1 ^ sh2
+        if not (isinstance(sh1 , int ) and isinstance(sh2 , int)):
+            raise TypeError , '参数必须为整数 !'
+        h = (sh1 ^ sh2 ) & ( 1 << 64 - 1)
         d = 0
         while h:
             h = h & (h - 1)
