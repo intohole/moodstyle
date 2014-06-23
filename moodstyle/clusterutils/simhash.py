@@ -6,28 +6,36 @@ from collections import defaultdict
 
 
 class SimHash(object):
+    '''
+    simhash 海明距离计算
+    词——》 hash
+    数字权重计算
+    逐位计算
+    取反取距离
+    '''
 
-    __seg = None
-    __word_hash = defaultdict()
+    __seg = None #分词藉口
+    __word_hash = defaultdict() #word——hash 保存
 
     def __init__(self, segfun=None):
         self.__seg = segfun
 
     def figureprint(self, document):
+        '''
+        计算海明编码
+        '''
         if document:
             if isinstance(document, (str, unicode)):
-                words = self.__seg(document)
-                wm = defaultdict(int)
-                for word in words:
-                    print word
+                words = self.__seg(document) #
+                wm = defaultdict(int) #词hash->出现次数
+                for word in words: #循环分词
                     if not self.__word_hash.has_key(word):
                         self.__word_hash[word] = self.hash(word)
                     wm[self.__word_hash[word]] += 1
                 hash_arry = [0 for i in range(64)]
                 for __hash , __weight in wm.items():
                     self.__array_add(hash_arry , self.__toarry(__hash , __weight))
-                print hash_arry
-                return self.__toint(hash_arry)
+                return self.__toint(hash_arry) #转换为数字
 
     def __toint(self , hash_arry):
         __h = 0 
