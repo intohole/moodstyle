@@ -8,6 +8,9 @@ z = w1 * x1 + w2 * x2 + b
 
 '''
 
+
+
+
 from math import exp
 from random import randint
 from random import random
