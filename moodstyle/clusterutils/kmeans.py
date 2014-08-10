@@ -122,6 +122,8 @@ class ClusterItem:
     '''
 
     def __init__(self, item, lable=None):
+        if not item or not isinstance(item , list):
+            raise TypeError , 'item type is list'
         self.item = item
         self.lable = lable
 
@@ -129,7 +131,7 @@ class ClusterItem:
         return '%s : %s' % (self.lable, str(self.item))
 
 from collections import defaultdict
-
+import copy
 
 class NewKmeans(object):
 
@@ -157,28 +159,28 @@ class NewKmeans(object):
                         items[i].lable = __lable
                     centres = self.find_centre(items, centres, item_len)
                     __iter += 1
-                return items
+                return items , centres
 
     def find_centre(self, items, centres, feature_len):
 
         '''
+        items  ClusterItem ，　聚类元素
+        centres 聚类中心
+        feature_len 聚类元素中每个元素的向量长度　即　len(ClusterItem.item)
         找到kmeans再次聚类中心点　，　是一个虚拟的中心点
         现在的算法是计算每个数据的平均数
         '''
         lable_count = defaultdict(int)
-        for i in range(len(centres)):
+        for i in range(len(centres)): #清空聚类中心
             for j in range(feature_len):
                 centres[i].item[j] = 0
         for i in range(len(items)):
             for j in range(feature_len):
                 centres[items[i].lable].item[j] += items[i].item[j]
             lable_count[items[i].lable] += 1
-        print lable_count
         for i in range(len(centres)):
             for j in range(feature_len):
                 centres[i].item[j] /= lable_count[i]
-        for i in centres:
-            print i.item
         return centres
 
     def distance(self, item1, item2, item_len):
@@ -190,13 +192,19 @@ class NewKmeans(object):
         while __have < k:
             __index = randint(0, len(items) - 1)
             if not items[__index].lable:
-                seeds.append(ClusterItem(items[__index].item, __have))
+                seeds.append(ClusterItem( copy.copy(items[__index].item ), __have))
                 __have += 1
         return seeds
+
+
+
 
 if __name__ == "__main__":
     k = NewKmeans()
     items = [ClusterItem([randint(0, 10) * 1.0 , randint(0, 10) * 1.0])
              for _ in range(10)]
-    for i in k.cluster(items, 2, 1):
-        print i
+    cluster_item , centres = k.cluster(items, 2, 3)
+    for centre in centres:
+        print centre
+    for item in cluster_item:
+        print item
