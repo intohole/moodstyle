@@ -62,6 +62,10 @@ class DefaultDecisionTree(object) :
             sys_info_gain += self.entropy(float(__count) / data_count)
 
 
+        attr_label_count = {} # attr_name - > attr_value - > label_count 
+        #循环数据　　，　计算每个属性
+        #计算每个属性值的时候　分别计算
+
         
 
 
