@@ -33,7 +33,7 @@ class SimHash(object):
                         self.__word_hash[word] = self.hash(word)
                     wm[self.__word_hash[word]] += 1
                 hash_arry = [0 for i in range(64)] #所有ｈａｓｈ值相加减数组
-                for __hash , __weight in wm.items():　#循环数组　权重
+                for __hash , __weight in wm.items():#循环数组　权重
                     self.__array_add(hash_arry , self.__toarry(__hash , __weight))
                 return self.__toint(hash_arry) #转换为数字
 
@@ -83,6 +83,9 @@ class SimHash(object):
 
 if __name__ == '__main__':
     f = SimHash(lambda x : x.split())
+    print f.figureprint('hello')
     print f.figureprint('i have a box !') ^ f.figureprint('i have a cat !')
-    print SimHash.distance(f.figureprint('i have a cat !')  , f.figureprint('i have a cat !'))
-    # print f.hash('a')
+    print f.figureprint('he have cat')
+    print f.figureprint('i have a cat !')
+    print SimHash.distance(f.figureprint('he have cat !')  , f.figureprint('i have a cat !'))
+    print f.hash('a')
