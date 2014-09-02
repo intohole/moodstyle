@@ -45,63 +45,38 @@ class DefaultDecisionTree(object) :
             return (-prob) * math.log(prob, 2)
 
 
-    def calc_info_gain(self , datas  , attrsed):
+    def calc_info_gain(self , datas , attrs ):
         '''
-        数据形如　：　[{'label' : 1 , 'data' : {}} , {'label' : 0  , 'data' : {}}]
+        数据形如　：　[{'lable' : 1  , 'data' : [1 , 2 , 3]]
         attrsed set类型　为已经计算完的属性名称
         '''
         data_status = defaultdict(int) # label - > count 
         data_count = 0
-        attr_have = {}
         for data in datas:
-            if set(data['data'].keys()) != attrsed:
-                data_status[data['label']] += 1
-                data_count+= 1 
+            data_status[data['label']] += 1
+            data_count += 1
         sys_info_gain =  0. #系统总信息熵
         for __label , __count in data_status:
             sys_info_gain += self.entropy(float(__count) / data_count)
-
-
-        attr_label_count = {} # attr_name - > attr_value - > label_count 
+        attr_label_count = dict() # attr_name - > attr_value - > label_count 
+        for __key in attrs.keys():
+            attr_label_count[__key] = {}
         #循环数据　　，　计算每个属性
         #计算每个属性值的时候　分别计算
-
-        
-
-
-
-
-
-
-
-
-class DecisionTree(object):
-
-    __data = {'a': {'c': {1: 30, 2: 70}, 'd': {1: 20, 0: 80}, 'e': {1: 50, 0: 50} , 'count' : 100}, 'h': {'c': {1: 30, 2: 70}, 'd':
-             {1: 20, 0: 80}, 'e': {1: 50, 0: 50} , 'count' : 100}, 'x': {'c': {1: 30, 2: 70}, 'd': {1: 20, 0: 80}, 'e': {1: 50, 0: 50} , 'count' : 100}}
-        # 类别 -> 属性 -> {1 : 个数 , 0 : 个数}
-    __data_count = 300.
-
-    def tarin(self, data):
-        pass
-
-    def entropy(self, prob):
-        if prob and isinstance(prob, float) and prob >= 0. and prob <= 1.:
-            return (-prob) * math.log(prob, 2)
-
-    def ig(self, cname, attrname):
-        if self.__data.has_key(cname):
-            if self.__data[cname].has_key(attrname):
-                centropy = 0.
-                for __val in self.__data.keys():
-                    centropy += self.entropy(self.__data[__val]['count'] / self.__data_count)
-                for __val in self.__data[cname][attrname].values():
-                    centropy -= self.entropy(float(__val) / self.__data[cname]['count'])
-                return centropy
+        for data in datas: #循环每个数组
+            __data = data['data']
+            __label = data['label']
+            for i in range(__data):
+                if not attr_label_count[attrs[i]].has_key(__data[i]):
+                    attr_label_count[attrs[i]][__data[i]] = {}
+                    for label in data_status.keys():
+                        attr_label_count[attrs[i]][__data[i]][label] = 0 
+                attr_label_count[attrs[i]][__data[i]][__label] += 1    
 
 
 if __name__ == '__main__':
     x = DefaultDecisionTree()
+    atrrs = {1 : '1' , 2 : '2' , 3: '3'}
     datas = [{'label' : 0 , 'data' : {'1' : 0 , '2' : 0 , '3' : 0 }} , {'label' : 1 , 'data' : {'1' : 1 , '2' : 2 , '3' : 0 }} ]
     x.calc_info_gain(datas , set(['2','3']))
     print x.entropy(9.0 / 14) + x.entropy(5.0 / 14)
