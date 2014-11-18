@@ -3,6 +3,7 @@
 
 import math
 from collections import defaultdict
+<<<<<<< HEAD
 
 class Node(object):
 
@@ -27,35 +28,28 @@ class DefaultDecisionTree(object) :
 
 
 
-    def predict(self , data):
+
+class TrainDT(object):
+
+    def __init__(self):
         pass
 
 
-
-    def train(self , datas):
-        pass
-
-
-
-    def split_datas_by_attr(self , datas , attr , attsed ):
+    def train(self , data , attrs ):
         '''
-        将数据按照某个属性进行split动作　，　决策树计算流程　，　按照某个属性对系统的增益最大（最能确定分类元素）　，
-        建立节点按照
+        data -> [label , data1 , data2 , ....., dataN]
+        attrs -> [attr1 , attr2 , attr3 ,.....,attrN]
         '''
-        tree_root = {}
+        dt = {}
 
 
 
-    def entropy(self , prob ):
-        if prob and isinstance(prob, float) and prob >= 0. and prob <= 1.:
-            return (-prob) * math.log(prob, 2)
 
-
-    def calc_info_gain(self , datas , attrs ):
+    def split_data(self , data , attr_name , attr_value , attrs):
         '''
-        数据形如　：　[{'lable' : 1  , 'data' : [1 , 2 , 3]]
-        attrsed set类型　为已经计算完的属性名称
+        split classifier data
         '''
+
         data_status = defaultdict(int) # label - > count 
         data_count = 0
         for data in datas:
@@ -88,3 +82,4 @@ if __name__ == '__main__':
     print x.entropy(9.0 / 14) + x.entropy(5.0 / 14)
     print x.entropy(6.0 / 9) + x.entropy( 2.0 /5)
     print x.entropy(3.0 / 9) + x.entropy( 3.0 /5)
+
