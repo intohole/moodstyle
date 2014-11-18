@@ -9,4 +9,5 @@ class Knn(object):
 
 
 
-	def 
+	def cluster(self , datas ):
+        raise NotImplementedError
