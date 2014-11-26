@@ -44,9 +44,22 @@ class AdBoost(object):
         trains = [BoostData(data, 1.0 / len(datas)) for data in datas]
         for _ in range(len(self.__boost_classifier)):
             best_classifier = self.__get_trainer(trains)[0]
-            print best_classifier[0]
             best_classifier[1].weight = math.log( (1 - best_classifier[0]) / best_classifier[0]  , 2) /2
-            break
+            self.__update_data_weight(trains , best_classifier[1])
+
+
+    def classify(self , data):
+        return sum([ classifier.weight * classifier(data) for classifier in self.__boost_classifier if classifier.weight != None])
+
+    def __update_data_weight(self , trains , classifier):
+        '''
+        功能： 更新数据的权重 
+        公式：
+
+        '''
+        zm = sum( [data.weight * math.exp(-classifier.weight * data.data[-1] * classifier(data.data[:-1])) for data in trains])
+        for data in trains:
+            data.weight = data.weight  * math.exp(-classifier.weight * data.data[-1] * classifier(data.data[:-1])) / zm 
 
 
 
@@ -69,4 +82,5 @@ if __name__ == '__main__':
     datas=[[0, 1], [1, 1], [2, 1], [3, -1], [4, -1],
                 [5, -1], [6, 1], [7, 1], [8, 1], [9, -1]]
     a.train(datas)
+    print a.classify([4])
     print a
