@@ -8,10 +8,11 @@ class TrainHmm(object):
     def __init__(self, states):
         if not (states and isinstance(states, (list, tuple))):
             raise ValueError
+        # hide state status {hide_count : count }
         self.states_count = defaultdict(float)
-        self.obs = set()
-        self.states = states
-        self.start_states = create_start_states(states)
+        self.obs = defaultdict(float)  # obs state {obs_state : count }
+        self.states = states  # obs state list
+        self.start_states = create_start_states(states)  # start probability
         self.transition_probability = create_transition_probability(states)
         self.emission_probability = create_emission_probability(states)
 
@@ -46,6 +47,7 @@ class TrainHmm(object):
             for i in range(len(data)):
                 if i == 0:
                     self.start_states[data[i][1]] += 1
+                self.obs_state[data[0]] += 1
                 self.states_count[data[i][1]] += 1
                 self.emission_probability[data[i][1]][data[i][0]] += 1
 
@@ -56,13 +58,15 @@ class TrainHmm(object):
         for state in self.start_states.keys():
             self.start_states[state] = self.start_states[state] / startsCount
         # 转移矩阵
+
         for state in self.transition_probability.keys():
             for after_state in self.transition_probability.key():
                 self.transition_probability[state][after_state] = self.transition_probability[state][
                     after_state] / self.states_count[state]
         # 可观察状态下的隐藏状态发生概率
         for state in self.emission_probability.keys():
-            for obs_state in self.obs:
+            for obs_state in self.obs_state.keys():
                 # 注释下 ： 在这个观察状态下 ， 隐藏状态发生的概率 ， 如果是 ( 可观察状态 in 此隐藏状态 ） / 可观察状态
+                # in this obs state , hide state will
                 self.emission_probability[state][obs_state] = (
-                    self.emission_probability[state][obs_state] + 1) / self.states_count[state]
+                    self.emission_probability[state][obs_state] + 1) / self.obs_state[state])
