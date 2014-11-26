@@ -68,5 +68,7 @@ class TrainHmm(object):
             for obs_state in self.obs_state.keys():
                 # 注释下 ： 在这个观察状态下 ， 隐藏状态发生的概率 ， 如果是 ( 可观察状态 in 此隐藏状态 ） / 可观察状态
                 # in this obs state , hide state will
+                # p(hide_state | obs_state)
+                # p(A|B) = P(AB) / P(B) = Count(AB) / count(Br)
                 self.emission_probability[state][obs_state] = (
                     self.emission_probability[state][obs_state] + 1) / self.obs_state[state])
