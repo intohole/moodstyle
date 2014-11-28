@@ -32,13 +32,20 @@ class BoostData(object):
 class AdBoost(object):
 
     def __init__(self, classifiers=[]):
+
         self.__boost_classifier = [BoostClassifier(cl) for cl in classifiers]
+        self.__labels = set()
 
     def train(self, datas):
         '''
         [[feature1 , feature2 ,....,featuren , label]]
         '''
         # 初始化权重, 每个数据初始化权重为 weight = ( 1.0 / 数据长度 )
+        if len(datas) == 0 or len(self.__boost_classifier) == 0:
+            raise ValueError 
+
+        for data in datas:
+            self.__labels.add(data[-1])
         trains = [BoostData(data, 1.0 / len(datas)) for data in datas]
         for _ in range(len(self.__boost_classifier)):
             best_classifier = self.__get_trainer(trains)[0]
@@ -47,7 +54,9 @@ class AdBoost(object):
             self.__update_data_weight(trains, best_classifier[1])
 
     def classify(self, data):
-        return sum([classifier.weight * classifier(data) for classifier in self.__boost_classifier if classifier.weight != None])
+        weight = sum([classifier.weight * classifier(data)
+                      for classifier in self.__boost_classifier if classifier.weight != None])
+        return sorted([(abs(label - weight), label) for label in self.__labels], key=lambda x: x[0])[0][1]
 
     def __update_data_weight(self, trains, classifier):
         '''
@@ -80,5 +89,5 @@ if __name__ == '__main__':
     datas = [[0, 1], [1, 1], [2, 1], [3, -1], [4, -1],
              [5, -1], [6, 1], [7, 1], [8, 1], [9, -1]]
     a.train(datas)
-    print a.classify([4])
+    print a.classify([9])
     print a
