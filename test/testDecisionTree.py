@@ -5,13 +5,21 @@ from collections import defaultdict
 from math import log
 
 
+class Node(object):
+
+    def __init__(self, attr):
+        pass
+
+
 class DecisionTree(object):
 
-    def train(self, datas, denseData=False):
+    def train(self, datas, attrs, denseData=False):
         labels = [data[-1] for data in datas]
         if len(set(labels)) <= 1:
             return {'all': labels[1]}
         # return self.__getBestFeature(datas , denseData)
+
+        # for data , attrs ,
 
     @staticmethod
     def entropy(probs):
@@ -50,21 +58,48 @@ class DecisionTree(object):
                         attr_value_class_count[attrs[i]][data[i]][
                             data[-1]] = 0.
                     attr_value_class_count[attrs[i]][data[i]][data[-1]] += 1.0
+        # 信息增益计算公式分析
+        #     H(D) - H(D|A)
+        #     系统熵 - 每个属性下 ， 存在这个类别的信息熵
+        #
+        gains = [(attr,
+                  label_entropy -
+                  sum(
+                      [
+                          attr_value_count[attr][value] / data_num *
+                          DecisionTree.entropy(
+                              [
+                                  #计算每个属性在特定属性值时 ， 发生的概率
+                                  # p(DA1)/A
+                                  attr_value_class_count[attr][value][
+                                      label] / attr_value_count[attr][value]
+                                  #循环每个属性值在特定label产生
+                                  for label in attr_value_class_count[attr][value].keys()
+                              ]
+                          )
+                          for value in attr_value_count[attr].values() if attr_value_class_count[attr].has_key(value)]
+                  ),
+                  attr_value_count[attr].keys() )
+                 for attr in attr_value_count.keys()]
+        return sorted(gains, key=lambda x: x[1], reverse=True)
 
-        gains = [( label_entropy -
-                 sum([attr_value_count[attr][value] / data_num *
-                      DecisionTree.entropy([attr_value_class_count[attr][value][label] / attr_value_count[attr][value] 
-                        for label in attr_value_class_count[attr][value].keys() ]) 
-                      for value in attr_value_count[attr].values()]) 
-                 ,attr) for attr in attrs ]
-        return gains
+    def splitDataByAttr(self, datas, attr, atrr_value, denseData=True):
+        dump_datas = []
+        for data in datas:
+            dump = []
+            if data[attr] == attr_value:
+                dump = data[:attr]
+                dump.extend(data[attr:])
+                dump_datas.append(dump)
+        return dump_datas
+
 
 if __name__ == '__main__':
     # 测试数据
     # 是否必须水里 是否有脚蹼 属于鱼类
     data = [[1, 1, 1], [1, 1, 1], [1, 0, 0], [0, 1, 0], [0, 1, 0]]
     d = DecisionTree()
-    d.train(data)
+    # d.train(data)
     print DecisionTree.entropy([0.333, 0.21])
     test = [1, 2, 3]
-    print d.getBestFeature(data, [1, 2] , True)
+    print d.getBestFeature(data, [1, 2], True)
