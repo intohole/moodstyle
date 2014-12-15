@@ -14,7 +14,8 @@ class Node(object):
         self.child = {}
 
     def __str__(self):
-        return 'attr: %s \t label : %s \t ' % (self.attr_name, self.label)
+        child = '\t'.join(['%s %s' % (val , str(node)) for val , node in self.child.items()])
+        return 'attr: %s \t label : %s \t childs : [ %s ] ' % (self.attr_name, self.label, self.child)
 
 
 class DecisionTree(object):
@@ -26,29 +27,28 @@ class DecisionTree(object):
     def train(self, datas, attrs, threshold=0.01, denseData=True, tree=None):
         if self.attrs == None:
             self.attrs = attrs
-        if tree == None:
-            tree = Node()
-            self.tree = tree
+        node = Node()
+        if self.tree == None:
+            self.tree = node
         label_dict = Counter([data[-1] for data in datas])
         if len(label_dict.keys()) == 1:
-            tree.label = datas[0][-1]
-            return tree  # 如果都输于同一类 ， 则返回树
+            node.label = datas[0][-1]
+            return node  # 如果都输于同一类 ， 则返回树
             # return Node(label=datas[0][-1])
         if len(attrs) == 0:
-            tree.label = label_dict.most_common()[0][0]
-            return tree  # 如果属性为空 ， 则返回绝大数的类标记
+            node.label = label_dict.most_common()[0][0]
+            return node  # 如果属性为空 ， 则返回绝大数的类标记
             # return Node(label=label_dict.most_common()[0][0])
         attr, attr_gain, attr_val = self.getBestFeature(
             datas, attrs, denseData)[0]  # 得到最好信息增益的属性
         if attr_gain < threshold:
-            tree = label_dict.most_common()[0][0]
-            return tree
+            node = label_dict.most_common()[0][0]
+            return node
+        node.attr_name = attr
         for val in attr_val:
-            tree.attr_name = attr
-            node = Node()
-            tree.child[val] = node
-            # 暂时还没有修正树的迭代问题 ！！！！
-            self.train(
+            print attr
+            print val
+            node.child[val] = self.train(
                 self.splitDataByAttr(
                     datas, attrs, attr, val
                 ),
@@ -57,7 +57,7 @@ class DecisionTree(object):
                 ),
                 threshold,
                 denseData, node)
-        return tree
+        return node
 
     @staticmethod
     def entropy(probs):
@@ -174,7 +174,7 @@ class DecisionTree(object):
 if __name__ == '__main__':
     # 测试数据
     # 是否必须水里 是否有脚蹼 属于鱼类
-    data = [[1, 1, 1], [1, 1, 1], [1, 0, 0], [0, 1, 0], [0, 1, 0]]
+    data = [  [1, 0, 1], [0, 1, 0], [1, 1, 1]]
     d = DecisionTree()
     d.train(data, [1, 2])
-    print d.classify([1, 1])
+    print d.classify([1, 0])
