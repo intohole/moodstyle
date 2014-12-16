@@ -4,20 +4,23 @@
 from collections import defaultdict
 from collections import Counter
 from math import log
+import json 
 
 
-class Node(object):
+# class Node(object):
 
-    def __init__(self, attr_name=None, label=None):
-        self.attr_name = attr_name
-        self.label = label
-        self.child = {}
+#     def __init__(self, attr_name=None, label=None):
+#         self.attr_name = attr_name
+#         self.label = label
+#         self.child = {}
 
-    def __str__(self):
-        child = '\t'.join(['%s %s' % (val , str(node)) for val , node in self.child.items()])
-        return 'attr: %s \t label : %s \t childs : [ %s ] ' % (self.attr_name, self.label, self.child)
+#     def __str__(self):
+#         child = '\t'.join(['%s %s' % (val , str(node)) for val , node in self.child.items()])
+# return 'attr: %s \t label : %s \t childs : [ %s ] ' % (self.attr_name,
+# self.label, self.child)
 
-
+class Node(dict):
+    pass
 
 
 class DecisionTree(object):
@@ -26,40 +29,55 @@ class DecisionTree(object):
         self.tree = None
         self.attrs = None
 
-    def train(self, datas, attrs, threshold=0.01, denseData=True, tree=None):
+
+    def load_model(self , file_path):
+        '''
+        加载模型  
+        file_path : 模型加载地址 
+        功能 ： 不管是否成功都会覆盖model
+        '''
+        with open(file_path) as f:
+            self.tree = json.loads(f.readline().strip())
+
+    def save(self , model_path):
+        if not self.tree:
+            raise ValueError , 'no model can save!'
+        with open(file_path , 'w') as f:
+            f.write(json.dumps(self.tree))
+
+
+
+    def __train(self, datas, attrs, threshold=0.01, denseData=True):
         if self.attrs == None:
             self.attrs = attrs
-        node = Node()
-        if self.tree == None:
-            self.tree = node
         label_dict = Counter([data[-1] for data in datas])
         if len(label_dict.keys()) == 1:
-            node.label = datas[0][-1]
-            return node  # 如果都输于同一类 ， 则返回树
-            # return Node(label=datas[0][-1])
+            return datas[0][-1]
         if len(attrs) == 0:
-            node.label = label_dict.most_common()[0][0]
-            return node  # 如果属性为空 ， 则返回绝大数的类标记
-            # return Node(label=label_dict.most_common()[0][0])
+            return label_dict.most_common()[0][0]
         attr, attr_gain, attr_val = self.getBestFeature(
             datas, attrs, denseData)[0]  # 得到最好信息增益的属性
         if attr_gain < threshold:
-            node.label = label_dict.most_common()[0][0]
-            return node
-        node.attr_name = attr
+            return label_dict.most_common()[0][0]
+        node = Node()
+        node[attr] = {}
+        sublables = self.getSplitAttrs(#为下轮切割属性
+            attrs, attr
+        )
         for val in attr_val:
-            #按照属性不同value 区分这个 
-            #取得最好分类属性 ， 按照不同该属性不同val 区分数据 ；
-            node.child[val] = self.train(
+            # 按照属性不同value 区分这个
+            # 取得最好分类属性 ， 按照不同该属性不同val 区分数据 ；
+            node[attr][val] = self.__train(
                 self.splitDataByAttr(
                     datas, attrs, attr, val
                 ),
-                self.getSplitAttrs(
-                    attrs, attr
-                ),
+                sublables,
                 threshold,
-                denseData, node)
+                denseData)
         return node
+
+    def train(self, datas, attrs, threshold=0.01, denseData=True):
+        self.tree = self.__train(datas, attrs, threshold, denseData)
 
     @staticmethod
     def entropy(probs):
@@ -160,23 +178,25 @@ class DecisionTree(object):
             data 待分析的数据 ， list
         返回:
             返回决策树的label
+        思想 ： 每层树的节点 {节点1：{val1 ：节点2：{val3 ：{。。。。{valn ： label }}}
+        第一层是key 下一层是val 第三层是key 第四层是val 。。。。 直到出现val
         '''
         if self.tree == None:
             raise Exception, 'no model !'
         node = self.tree
-        if node.label != None:
-            return node.label
+        if not isinstance(node , dict):
+            return node 
         for _ in range(len(data)):
-            index = self.attrs.index(node.attr_name)
-            node = self.tree.child[data[index]]
-            if node.label != None:
-                return node.label
-        return None
+            val = data[self.attrs.index(node.keys()[0])] # 得到第n%2层val
+            node = node[node.keys()[0]][val]
+            if not isinstance(node , dict):
+                return node
+        raise 'DecisionTree is wrong !' , self.tree
 
 if __name__ == '__main__':
     # 测试数据
     # 是否必须水里 是否有脚蹼 属于鱼类
-    data = [  [1, 0, 1], [0, 1, 0], [1, 1, 1]]
+    data = [[1, 0, 'man'], [1, 1, 'man'], [0, 1, 'man'] ,[0,0,'woman']]
     d = DecisionTree()
     d.train(data, [1, 2])
-    print d.classify([1, 0])
+    print d.classify([0,0])
