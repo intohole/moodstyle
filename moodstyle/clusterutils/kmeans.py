@@ -139,27 +139,30 @@ class NewKmeans(object):
         '''
         ｋmeans聚类
         '''
-        if len(items) > 0:
-            if isinstance(items, list):
-                # items = [ClusterItem(data) for data in datas]  # 生成可以通用的聚类数据
-                centres = self.random_seed(items, k)  # 随机生成中心点
-                __iter = 0  # 迭代轮数
-                item_len = len(items[0].item)
-                while __iter < iter_count:
-                    for i in range(len(items)):  # 循环每个元素
-                        __min = None
-                        __lable = -1
-                        # 循环每个中心　，　迭代查找最近的一个中心
-                        for centre in centres:
-                            __distance = self.distance(
-                                items[i], centre, item_len)
-                            if not __min or __min < __distance:
-                                __min = __distance
-                                __lable = centre.lable
-                        items[i].lable = __lable
-                    centres = self.find_centre(items, centres, item_len)
-                    __iter += 1
-                return items , centres
+        if not len(items):
+            raise ValueError , 'please check items %s ' % items
+
+        if not isinstance(items, list):
+            raise TypeError , 'items type is list !'
+            # items = [ClusterItem(data) for data in datas]  # 生成可以通用的聚类数据
+        centres = self.random_seed(items, k)  # 随机生成中心点
+        __iter = 0  # 迭代轮数
+        item_len = len(items[0].item)
+        while __iter < iter_count:
+            for i in range(len(items)):  # 循环每个元素
+                __min = None
+                __lable = -1
+                # 循环每个中心　，　迭代查找最近的一个中心
+                for centre in centres:
+                    __distance = self.distance(
+                    items[i], centre, item_len)
+                    if not __min or __min < __distance:
+                        __min = __distance
+                        __lable = centre.lable
+                    items[i].lable = __lable
+                centres = self.find_centre(items, centres, item_len)
+                __iter += 1
+        return items , centres
 
     def find_centre(self, items, centres, feature_len):
 

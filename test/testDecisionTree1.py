@@ -34,7 +34,7 @@ class DecisionTree(object):
         '''
         加载模型  
         file_path : 模型加载地址 
-        功能 ： 不管是否成功都会覆盖model
+        功能 ： 不管是否成功都会覆盖model 
         '''
         with open(file_path) as f:
             self.tree = json.loads(f.readline().strip())
