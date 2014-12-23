@@ -39,6 +39,7 @@ class DbScan(object):
             if len(neighbours) > minPoint :
                 clutser.neighbours.extend(neighbours)
         for clutser in cluters:
+            
 
 
 
