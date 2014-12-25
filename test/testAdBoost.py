@@ -42,13 +42,16 @@ class AdBoost(object):
         '''
         # 初始化权重, 每个数据初始化权重为 weight = ( 1.0 / 数据长度 )
         if len(datas) == 0 or len(self.__boost_classifier) == 0:
-            raise ValueError 
+            raise ValueError
 
         for data in datas:
             self.__labels.add(data[-1])
+        # 将数据权重初始化为 1.0/ 数据总长度
         trains = [BoostData(data, 1.0 / len(datas)) for data in datas]
+        # 开始计算每个分类器的权重
         for _ in range(len(self.__boost_classifier)):
             best_classifier = self.__get_trainer(trains)[0]
+
             best_classifier[1].weight = math.log((1 - best_classifier[0]) /
                                                  best_classifier[0], math.e) / 2
             self.__update_data_weight(trains, best_classifier[1])
@@ -72,14 +75,31 @@ class AdBoost(object):
                          data.data[-1] * classifier(data.data[:-1])) / zm
 
     def __str__(self):
-        msg = []
-        for i in range(len(self.__boost_classifier)):
-            msg.append('%s : %s' % (i, self.__boost_classifier[i]))
-        return '\t'.join(msg)
+        return '\t'.join(
+            [
+                '%s : %s' % (i, self.__boost_classifier[i])
+                for i in range(len(self.__boost_classifier))
+            ]
+        )
 
     def __get_trainer(self, trains):
-        return sorted([(sum([bd.weight for bd in trains if cl(bd.data[:-1]) != bd.data[-1]]), cl)
-                       for cl in self.__boost_classifier if cl.weight == None], key=lambda x: x[0], reverse=False)
+        '''
+        trains , 训练的数据 
+        '''
+        # 循环每个分类器（除了已经添加为分类器的分类器）， 计算 （数据的权重 * 分类器错分） 
+        # ， 找到上述值最小的一个 ， 作为下个分类器
+        return sorted([(
+            sum(
+                [
+                    bd.weight
+                    for bd in trains
+                    if cl(bd.data[:-1]) != bd.data[-1]
+                ]
+            ), cl)
+            for cl in self.__boost_classifier
+            if cl.weight == None
+        ],
+            key=lambda x: x[0], reverse=False)
 
 
 if __name__ == '__main__':
