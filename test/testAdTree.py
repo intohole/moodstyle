@@ -10,3 +10,7 @@ class AdTree(object):
 
 
     def train(datas , )
+
+
+
+
