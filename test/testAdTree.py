@@ -1,7 +1,7 @@
 #!/coding=utf-8
 
 from collections import defaultdict
-from copy import copy
+from copy import deepcopy
 
 
 class Classifier(object):
@@ -29,6 +29,9 @@ class Classifier(object):
             self.update_fit_value(datas[i], values[i])
 
     def sync(self):
+        '''
+        计算每个分类器需要拟合误差值
+        '''
         for label in self.__weights.keys():
             self.__weights[label] /= self.__count[label]
 
@@ -41,9 +44,14 @@ class Classifier(object):
         return str(self.__weights)
 
 
+
+
+
+
 class AdTree(object):
 
     def __init__(self):
+        #定义分类器集合
         self.classifiers = []
 
     def train(self, datas, weights, classifiers, diff=0.2):
@@ -55,20 +63,22 @@ class AdTree(object):
         FN(x) = FN(x) + 树(N-1)
         r(x) = sum ( yi - F
         '''
-        r = copy(weights)
+        r = deepcopy(weights)
 
         for _ in range(len(classifiers)):
             _classifiers = [Classifier(classifier) for classifier in classifiers]
-            # 更新每个分类器 ， 与上轮的残差 ， 计算需要拟合的weight
+            # 更新每个分类器 ， 与上轮的
+            # 残差 ， 计算需要拟合的weight
             for _classifier in _classifiers:
                 _classifier.updates_fit_values(datas, r)
                 _classifier.sync()
-            print r 
+            #计算损失函数值 ， 分类器的标记
             loss, ci = self.find_min_loss(datas, r, _classifiers)
-            print loss , ci 
-            print _classifiers[ci]
-            self.classifiers.append(_classifiers[ci])
-            r = self.update_residual(datas, r)
+            self.classifiers.append(deepcopy(_classifiers[ci]))
+            #更新下一轮残差是当前一轮分类器拟合上一轮残差剩余的残差
+            #所以更新残差的时候是分类器，而不是所有分类器都参加更正
+            r = self.update_residual(datas, r , _classifiers[ci])
+            #损失数值小于要求值之后 ， 会跳出方程
             if loss < diff:
                 break
 
@@ -93,13 +103,13 @@ class AdTree(object):
             for j in range(len(classifiers))
         ])
 
-    def update_residual(self, datas, residuals):
+    def update_residual(self, datas, residuals , classifier):
         '''
         返回一个参差表 ， 通过生成的分类器 ， 计算下一轮需要拟合的残差表
         Rn-1,i = yi - fn-1(xi)
         '''
         return [
-            residuals[i] - self.classify(datas[i])
+            residuals[i] - classifier.classify(datas[i])
             for i in range(len(datas))
         ]
 
@@ -116,4 +126,4 @@ if __name__ == '__main__':
                    1 if x >= 5.5 else 0, lambda x: 1 if x >= 6.5 else 0, lambda x: 1 if x >= 7.5 else 0, lambda x: 1 if x >= 8.5 else 0, lambda x: 1 if x >= 9.5 else 0]
 
     at.train(datas, weights, classifiers)
-    print at.classify(6)
+    print at.classify(8)
