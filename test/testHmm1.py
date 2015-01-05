@@ -1,6 +1,52 @@
 # coding=utf-8
 
-from collections import defaultdict
+
+class HmmItem(object):
+
+    __slots__ = ('obs', 'hide')
+
+    def __init__(self, obs, hide):
+        self.obs = obs
+        self.hide = hide
+
+    def __str__(self):
+        return 'obs_state: %s \t hide_state: %s' % (self.obs, self.hide)
+
+
+class HmmItems(list):
+    '''
+    主要为了存储序列性观察与隐藏相对应状态 ；
+    主要方法：
+    t[1]=(1,2)
+    t.append(HmmItem) or t.append((obs , hide))
+    '''
+
+
+
+    def __check(self , value):
+        if not value:
+            raise ValueError, 'value is nothing , keep it out'
+
+
+
+    def __setitem__(self, key, value):
+        self.__check(value)
+        if isinstance(value, HmmItem):
+            super(HmmItems, self).__setitem__(key, value)
+        elif isinstance(value, (tuple, list)) and len(value) == 2:
+            super(HmmItems, self).__setitem__(key, HmmItem(value[0], value[1]))
+        else:
+            raise TypeError, 'HmmItems append accept type only ( HmmItem , tuple or list which is first item is obs state and second is hide state!) '
+
+    def append(self, value):
+        self.__check(value)
+        if isinstance(value, HmmItem):
+            super(HmmItems, self).append(value)
+        elif isinstance(value, (tuple, list)) and len(value) == 2:
+            super(HmmItems, self).append(HmmItem(value[0], value[1]))
+        else:
+            raise TypeError, 'HmmItems append accept type only ( HmmItem , tuple or list which is first item is obs state and second is hide state!) '
+
 
 
 
@@ -37,20 +83,19 @@ class TrainHmm(object):
             emission_probability[state] = defaultdict(float)
         return emission_probability
 
-    def trainHmm(self, datas):
-        if datas:
-            raise ValueError, 'datas is null !'
-        if isinstance(datas, list):
-            raise TypeError, 'datas type\'s must be list ; eg. [[(1 ,\'a\') ,(2 ,b)] ,[(2 , \'a\')]]'
-        for data in datas:
-            for i in range(len(data) - 1):
-                self.transition_probability[data[i][1]][data[i + 1][1]] += 1
-            for i in range(len(data)):
-                if i == 0:
-                    self.start_states[data[i][1]] += 1
-                self.obs_state[data[0]] += 1
-                self.states_count[data[i][1]] += 1
-                self.emission_probability[data[i][1]][data[i][0]] += 1
+
+
+    def add_item(self , hmmitems):
+
+        for i in range(len(hmmitems[:-1]) - 1) :
+            self.transition_probability[hmmitems[i].hide][hmmitems[i + 1].hide] += 1
+        self.start_states[hmmitems[0].hide] += 1
+        for item in hmmitems:
+            self.obs_state[item[i].obs] += 1
+            self.states_count[item[i].hide] += 1
+            self.emission_probability[item.hide][item.obs] += 1
+
+
 
     def translate(self):
 
@@ -72,4 +117,12 @@ class TrainHmm(object):
                 # p(hide_state | obs_state)
                 # p(A|B) = P(AB) / P(B) = Count(AB) / count(Br)
                 self.emission_probability[state][obs_state] = (
-                    self.emission_probability[state][obs_state] + 1) / self.states_count[state])
+                    self.emission_probability[state][obs_state] + 1) / self.states_count[state]
+
+
+if __name__ == '__main__':
+    a = []
+    a.append('a')
+    t = HmmItems()
+    t.append((1, 2))
+    print t
