@@ -1,5 +1,6 @@
 #coding=utf-8
 
+from random import randint
 
 class ClusterItem(object):
 
@@ -38,10 +39,22 @@ class DbScan(object):
             neighbours = [ neighbour for neighbour in datas if self.distance(data , neighbour) < radius]
             if len(neighbours) > minPoint :
                 clutser.neighbours.extend(neighbours)
+
+        #合并中心点    
         for clutser in cluters:
+            pass
+
+
+    def distance(self , data1  , data2 ):
+        raise NotImplementedError 
             
 
+if __name__ == '__main__':
+    t = DbScan()
 
+
+    datas = [[ _ , randint(0, 20) * 1.0, randint(0, 20) * 1.0] for _ in range(100)]
+    print datas
 
             
 

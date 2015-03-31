@@ -9,9 +9,7 @@ class Bayes(object):
     def __init__(self):
         pass
 
-    def classify(self, data):
-        pass
-
+   
     def train(self, datas, labels, dense=True):
         '''
         P(C | I) = P(I | C ) * P(C) /  P(I)
@@ -62,8 +60,8 @@ class Bayes(object):
 
 
 if __name__ == '__main__':
-    data = [[1, 0], [0, 1], [1, 1]]
-    labels = [1, 0, 1]
+    data = [[1, 0], [0, 1], [1, 1] , [1 , 0 ]]
+    labels = [1, 0, 1 , 1 ]
     b = Bayes()
     b.train(data, labels)
-    print b.classify([1, 1])
+    print b.classify([0, 0])
