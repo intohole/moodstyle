@@ -262,6 +262,7 @@ class C45(ID3):
                  for attr in attr_value_count.keys()]
         return sorted(gains, key=lambda x: x[1], reverse=True)
 
+
 if __name__ == '__main__':
     # 测试数据
     # 是否必须水里 是否有脚蹼 属于鱼类
