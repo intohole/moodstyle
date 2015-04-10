@@ -30,14 +30,10 @@ class DataDistance(object):
             下半角矩阵 ， 转换坐标
 
         '''
-        if line > (row+ 1) / 2 :
+        if line > row :
             tmp = row 
             row = line 
             line = tmp  
-        try:
-            d = self.distance_map[row][line]
-        except:
-            print row , line 
         return self.distance_map[row][line]
 
 
@@ -54,12 +50,11 @@ class DataDistance(object):
         distance_map = []
         for i in range(len(datas)):
             tmp_distance = []
-            for j in range(i + 1 ):
+            for j in range(i + 1):
                 if i == j:
                     tmp_distance.append(0)
                 else:
                     tmp_distance.append(distance_fun(datas[i], datas[j]))
-            print tmp_distance
             distance_map.append(tmp_distance)
         return distance_map
 
@@ -161,7 +156,7 @@ if __name__ == '__main__':
 
     hc = ALHierarchicalClustering()
     from random import randint
-    datas = [[i, randint(1, 20), randint(1, 20)] for i in range(5)]
+    datas = [[i, randint(1, 20), randint(1, 20)] for i in range(10)]
     clusters = hc.cluster(datas, 3,  100)
     for cluster in clusters:
         print cluster

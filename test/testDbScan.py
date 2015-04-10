@@ -1,14 +1,15 @@
 #coding=utf-8
 
 from random import randint
-
+from testBaseStrut import WeightArray
 class ClusterItem(object):
 
 
     def __init__(self , data):
         self.data = data 
         self.neighbours = []
-
+        self.visited = False
+        self.cluster = 0 
 
 
 class DbScan(object):
@@ -26,24 +27,41 @@ class DbScan(object):
             1)       判断输入点是否为核心对象
             2)       找出核心对象的E领域中的所有直接密度可达点
         util 所有输入点都判断完毕
+        
         repeat
             针对所有核心对象的E领域所有直接密度可达点找到最大密度相连对象集合，
             中间涉及到一些密度可达对象的合并。
         Util 所有核心对象的E领域都遍历完毕
         '''
         cluters = []
+        weight_map = WeightArray(datas , self.distance)
+        items = [ ClusterItem(data) for data in datas ] 
+        k = 1 
+        for i in range(items):
+            if items[i].visited == False:
+                neighbours = [ items[j]  for j in range(items) if i != j and if weight_map[(i,j)] < radius ]
+                if len(neighbours) >= minPoint:
+                    items[i].visited = True
+                    items[i].cluster = k
+                    for neighbour in neighbours:
+                        if neighbour.visited == False or neighbour.cluster = -1:
+                            neighbour.cluster = k 
+                            neighbour.visited = True
+                            items[i].data.append(neighbour)
 
-        for data in dats:
-            clutser = ClusterItem(data)
-            #计算每个数据点的邻居
-            neighbours = [ neighbour for neighbour in datas if self.distance(data , neighbour) < radius]
-            if len(neighbours) > minPoint :
-                clutser.neighbours.extend(neighbours)
+                        elif neighbour.visited == True and neighbour.cluster != -1:
+                            neighbour.cluster = k
+                            for item in neighbour.data:
+                                item.cluster = k
+                            items[i].data.extend(neighbour.data)
+                            del neighbour.data[:]
+                    k += 1 
+                else:
+                    items[i].visited = True
+                    items[i].cluster = -1
 
-        #合并中心点    
-        for clutser in cluters:
-            pass
 
+        
 
     def distance(self , data1  , data2 ):
         raise NotImplementedError 
