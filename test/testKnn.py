@@ -31,8 +31,10 @@ class KdTree(object):
 
 		split_index = self.get_split_index(datas , k , feature_len , depth )
 		datas = sorted(datas , key = lambda x : x[split_index] , reverse = True)
-		split_data_index = len(datas)/2 
-		data = datas[]
+		split_data_index = len(datas) / 2 
+		data = datas[split_data_index]
+		
+
 
 	def get_split_index(self , datas , k , feature_len , depth ):
 		data_sum = [0 ] * feature_len
