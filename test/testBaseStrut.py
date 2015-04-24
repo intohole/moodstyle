@@ -69,8 +69,23 @@ class WeightArray(object):
 
 
 
-
 class Normalization(object):
+
+
+	def __init__(self, *argv , **kw):
+		pass
+
+
+	def update(self , value):
+		raise NotImplementedError
+
+
+	def get_normalization(self ,value ):
+		raise NotImplementedError
+
+
+
+class MinMax(Normalization):
 	'''
 	类功能：
 		通过最普通的方式，将数据归一化
@@ -125,5 +140,72 @@ class Normalization(object):
 		if value is None :
 			raise ValueError 
 		if self.max == self.min:
-			return 1 
+			return 1
 		return (float(value) - self.min) / (self.max - self.min )
+
+
+import math 
+class ZScore(Normalization):
+
+
+
+
+	def __init__(self):
+		self.avg_value = 0 #均值
+		self.variance = 0 #方差均值
+
+
+
+	def update(self , values):
+		'''
+		function
+			计算数据的平均值和平均方差
+		'''
+		self.avg_value = sum(values) / float(len(values))
+		self.variance = math.sqrt(sum( (value - self.avg_value) ** 2  for value in values ) ) 
+
+
+	def get_normalization(self , value):
+		if value is None :
+			raise ValueError 
+		if self.avg_value == 0:
+			return 0 
+		return ( float(value)  - self.avg_value ) / self.variance
+
+
+class LogNormalization(Normalization):
+
+
+	def __init__(self , base = 10 ):
+		'''
+		function
+			init
+		params
+			base log基数，最好为最大值
+		return 
+			None 
+		raise 
+			None 
+		'''
+		self.base = base
+
+
+	def get_normalization(self , value ):
+		if value is None :
+			raise ValueError 
+		return math.log(value , self.base )
+
+class Arccotx(Normalization):
+
+
+	def get_normalization(self , value ):
+		if value is None:
+			raise ValueError
+		return math.atan(float(value)) * 2 / math.pi 
+
+if __name__ == '__main__':
+	l = Arccotx()
+	print l.get_normalization(10)
+
+
+
