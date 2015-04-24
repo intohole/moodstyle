@@ -66,3 +66,64 @@ class WeightArray(object):
                     tmp_distance.append(distance_fun(datas[i], datas[j]))
             distance_map.append(tmp_distance)
         return distance_map
+
+
+
+
+class Normalization(object):
+	'''
+	类功能：
+		通过最普通的方式，将数据归一化
+	'''
+
+
+	def __init__(self , max_value = None , min_value = None ) :
+		'''
+		function
+			init
+		params
+			max_value 最大值 ， 默认值None
+			min_value 最小值 ， 默认值None
+		'''
+		self.max = max_value 
+		self.min = min_value
+
+
+	def update(self , value):
+		'''
+		function
+			将属性对应更新，获得数据最大值和最小值
+		params
+			value 属性值 ， value 类型(int , long , float)
+		return 
+			None
+		raise
+			当value无法转换为float值，抛出ValueError
+		'''
+		if value is not None:
+			try:
+				value = float(value)
+			except Exception, e:
+				raise ValueError , e 
+			if self.max is None or self.max < value :
+				self.max = value 
+			if self.min is None or self.min > value :
+				self.min = value 
+
+
+	def get_normalization(self , value ):
+		'''
+		function
+			将value 转换为归一化后的值
+		params
+			value 属性值
+		return 
+			[0,1]
+		raise
+			value == None ValueError
+		'''
+		if value is None :
+			raise ValueError 
+		if self.max == self.min:
+			return 1 
+		return (float(value) - self.min) / (self.max - self.min )
