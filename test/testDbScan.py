@@ -39,12 +39,12 @@ class DbScan(object):
         k = 1 
         for i in range(items):
             if items[i].visited == False:
-                neighbours = [ items[j]  for j in range(items) if i != j and if weight_map[(i,j)] < radius ]
+                neighbours = [ items[j]  for j in range(items) if i != j and  weight_map[(i,j)] < radius ]
                 if len(neighbours) >= minPoint:
                     items[i].visited = True
                     items[i].cluster = k
                     for neighbour in neighbours:
-                        if neighbour.visited == False or neighbour.cluster = -1:
+                        if neighbour.visited == False or neighbour.cluster == -1:
                             neighbour.cluster = k 
                             neighbour.visited = True
                             items[i].data.append(neighbour)
@@ -72,6 +72,7 @@ if __name__ == '__main__':
 
 
     datas = [[ _ , randint(0, 20) * 1.0, randint(0, 20) * 1.0] for _ in range(100)]
+    t.cluster()
     print datas
 
             

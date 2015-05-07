@@ -7,17 +7,6 @@ from math import log
 import json
 
 
-# class Node(object):
-
-#     def __init__(self, attr_name=None, label=None):
-#         self.attr_name = attr_name
-#         self.label = label
-#         self.child = {}
-
-#     def __str__(self):
-#         child = '\t'.join(['%s %s' % (val , str(node)) for val , node in self.child.items()])
-# return 'attr: %s \t label : %s \t childs : [ %s ] ' % (self.attr_name,
-# self.label, self.child)
 
 class Node(dict):
     pass
@@ -58,14 +47,14 @@ class DecisionTree(object):
             return label_dict.most_common()[0][0]
         node = Node()
         node[attr] = {}
-        sublables = self.getSplitAttrs(  # 为下轮切割属性
+        sublables = self.get_split_attr(  # 为下轮切割属性
             attrs, attr
         )
         for val in attr_val:
             # 按照属性不同value 区分这个
             # 取得最好分类属性 ， 按照不同该属性不同val 区分数据 ；
             node[attr][val] = self.__train(
-                self.splitDataByAttr(
+                self.split_data_by_attr(
                     datas, attrs, attr, val
                 ),
                 sublables,
@@ -84,7 +73,7 @@ class DecisionTree(object):
             elif isinstance(probs, (int, float)):
                 return -probs * log(probs, 2)
 
-    def getSplitAttrs(self, attrs, attr):
+    def get_split_attr(self, attrs, attr):
         split_attrs = []
         index = attrs.index(attr)
         split_attrs.extend(attrs[:index])
@@ -94,7 +83,7 @@ class DecisionTree(object):
     def get_best_feature(self, datas, attrs, dense_data):
         raise NotImplementedError, '【获得最好属性方法没有实现】'
 
-    def splitDataByAttr(self, datas, attrs, attr_name, attr_value, dense_data=True):
+    def split_data_by_attr(self, datas, attrs, attr_name, attr_value, dense_data=True):
         '''
         切割训练集为了下一步
         datas :训练的数据 [[data]]
