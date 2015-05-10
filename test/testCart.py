@@ -48,12 +48,13 @@ class Cart(object):
 
 
 
-def get_split_point(datas , index):
+def get_split_value(datas , split_index):
     '''
     得到cart树，分割数据点index，中位数
     '''
     if len(datas):
-        return sum(data[index] for data in datas)/len(datas)
+        return sum(data[split_index] for data in datas)/len(datas)
+    raise ValueError
 
 
 
@@ -74,6 +75,17 @@ def calc_gini(datas , labels , index , split_value):
     return gini
 
 
+def get_best_split_feature(datas  , data_len , labels ):
+    ginis = []
+    for split_index in range(data_len):
+        split_value = get_split_value(datas , split_index)
+        ginis.append( ( calc_gini(datas , labels , split_index  , split_value) ,split_value , split_index ) )
+    return max(ginis)
+
+
+
+
+
 
 
 
@@ -81,6 +93,6 @@ if __name__ == '__main__':
     from random import random
     from random import randint
     datas = [ [random()+0.1] for i in range(10) ] 
+    print get_split_value(datas , 0)
     labels =[ 1 if datas[i] > 0.45 else 0 for i in range(len(datas))]
-    print datas 
-    print calc_gini(datas , labels , 0 , 0.45)
+    print get_best_split_feature(datas , 1 , labels)
