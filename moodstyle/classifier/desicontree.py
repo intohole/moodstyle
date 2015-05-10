@@ -3,7 +3,7 @@
 
 import math
 from collections import defaultdict
-<<<<<<< HEAD
+
 
 class Node(object):
 
@@ -12,7 +12,7 @@ class Node(object):
     def __init__(self):
         pass
 
-    def __
+    
 
 class DefaultDecisionTree(object) :
     '''

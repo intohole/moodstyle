@@ -2,61 +2,10 @@
 
 
 import math
-
-
-class DataDistance(object):
-
-    def __init__(self, datas, distance_fun):
-        self.lable_dict = {datas[index][0]:index   for index in range(len(datas))}
-        self.distance_map = self.create_distance_map(datas, distance_fun)
-        self.data_len = len(datas)
+from testBaseStrut import WeightArray
 
 
 
-
-    def __getitem__(self, label_tuple):
-        label1, label2 = label_tuple
-        if self.lable_dict.has_key(label1) and self.lable_dict.has_key(label2):
-            index1 = self.lable_dict[label1]
-            index2 = self.lable_dict[label2]
-            return self.get_distance_by_index(index1 , index2)
-        raise IndexError, 'index : %s , index2 : %s  not in this distance_map'
-
-
-
-    def get_distance_by_index(self  , row , line ):
-        '''
-        function:
-            下半角矩阵 ， 转换坐标
-
-        '''
-        if line > row :
-            tmp = row 
-            row = line 
-            line = tmp  
-        return self.distance_map[row][line]
-
-
-
-    def create_distance_map(self, datas, distance_fun):
-        '''
-        function:
-            创建数据距离map
-        params:
-            datas 数据，格式 [[label1 , x1 ,x2...,xN ] , [lable2 , x1 , x2 , ..., xN]....[labelN , x1, x2 , ...xN] ]
-        return 
-            datas_map 
-        '''
-        distance_map = []
-        for i in range(len(datas)):
-            tmp_distance = []
-            for j in range(i + 1):
-                if i == j:
-                    tmp_distance.append(0)
-                else:
-                    tmp_distance.append(distance_fun(datas[i], datas[j]))
-            distance_map.append(tmp_distance)
-        return distance_map
 
 class HTree(object):
 
@@ -82,14 +31,14 @@ class HierarchicalClustering(object):
         no_change = False
 
         # 创建数据距离词典
-        distance_map = DataDistance(datas, self.distance)
+        distance_map = WeightArray(datas, self.distance)
         # 创建一个cluster，每个数据都是一个cluster
         clusters = [[datas[i]] for i in range(len(datas))]
 
         # 如果聚类不小于要求聚类数目继续
         while len(clusters) > cluster_num:
-            min_distance = None
-            min_cluster_pair = None
+            min_distance = None #最短距离保存值
+            min_cluster_pair = None #最短距离所对应的数据
             for i in range(len(clusters)):
                 for j in range(i + 1, len(clusters)):
                     d = self.get_cluster_distance(
@@ -133,12 +82,19 @@ class HierarchicalClustering(object):
 
 
 class ALHierarchicalClustering(HierarchicalClustering):
-
+    '''
+    主要算法：
+        计算cluster之间平均距离
+    '''
     def get_cluster_distance(self, cluster1, cluster2, distance_map):
         return sum([sum(distance_map[(data1[0], data2[0])]for data2 in cluster2) for data1 in cluster1]) / float(len(cluster1) * len(cluster2))
 
 
 class SLHierarchicalClustering(HierarchicalClustering):
+    '''
+    主要算法：
+        两个cluster中最小的两个数据之间距离
+    '''
 
     def get_cluster_distance(self, cluster1, cluster2, distance_map):
 
@@ -146,6 +102,10 @@ class SLHierarchicalClustering(HierarchicalClustering):
 
 
 class CLHierarchicalClustering(HierarchicalClustering):
+    '''
+    主要算法：
+        两个cluster中距离最大两个数据距离
+    '''
 
     def get_cluster_distance(self, cluster1, cluster2, distance_map):
 
@@ -157,6 +117,6 @@ if __name__ == '__main__':
     hc = ALHierarchicalClustering()
     from random import randint
     datas = [[i, randint(1, 20), randint(1, 20)] for i in range(10)]
-    clusters = hc.cluster(datas, 3,  100)
+    clusters = hc.cluster(datas, 4,  100)
     for cluster in clusters:
         print cluster
