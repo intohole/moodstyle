@@ -31,7 +31,7 @@ class Kmeans(object):
                      计算数据与每个中心距离 ， 找到一个最小值
                      如果 数据原有label 和现有label 不同：
                           diff_labels += 1
-                 计算数据label变化比率 ， 如果超出diff设置值 ， 继续下轮迭代 
+                 计算数据label变化比率 ， 如果超出diff设置值 ， 继续下轮迭代
                  否则 ， 跳出循环
             返回数据labels
         '''
@@ -51,9 +51,9 @@ class Kmeans(object):
                     labels[i] = bestlabel[1]
             if float(diff_labels) / len(datas) < diff:
                 break
-            centers = self.update_centers(datas, labels , centers )
-            print _ ,'iter'
-        return labels , centers
+            centers = self.update_centers(datas, labels, centers)
+            print _, 'iter'
+        return labels, centers
 
     def rand_seed(self, datas, k):
         rand_seeds = sample(datas, k)
@@ -61,7 +61,8 @@ class Kmeans(object):
         return rand_seeds
 
     def update_centers(self, datas, labels, centers):
-        centers_dict = {center[1]: [0 for i in range(len(center))] for center in centers }
+        centers_dict = {
+            center[1]: [0 for i in range(len(center))] for center in centers}
         label_dict = Counter(labels)
         for i in range(len(datas)):
             for j in range(len(datas[i])):
@@ -84,9 +85,63 @@ class DKmeans(Kmeans):
         )
 
 
+class DDdistance(object):
+
+    def distance(self, data1, data2):
+        raise NotImplementedError
+
+
+class Manhattan(DDdistance):
+
+    """
+        算法实现曼哈顿距离
+    """
+
+    def distance(self, data1, data2):
+        if len(data1) != len(data2):
+            raise ValueError
+        return sum([abs(data1[i] - data2[i]) for i in range(len(data1))])
+
+
+class Chebyshev(DDdistance):
+
+    """
+        切比雪夫距离
+    """
+
+    def distance(self, data1, data2):
+        if len(data1) != len(data2):
+            raise ValueError
+        return max([abs(data1[i] - data2[i]) for i in range(len(data1))])
+
+
+class Cosine(DDdistance):
+
+    """
+        余弦距离
+    """
+
+    def distance(self, data1, data2):
+        if len(data1) != len(data2):
+            raise ValueError
+
+        return sum([data1[i] * data2[i] for i in range(len(data1))]) / (
+            math.sqrt(sum([data ** 2 for i in data1])) +
+            math.sqrt(sum([data ** 2 for data in data2]))
+        )
+
+class Hamming(DDdistance):
+    """
+        海明距离
+    """
+
+    def distance(self , data1 , data2):
+        return sum([ 1 if data1[i] == data2[i] for i in range(len(data1)) ]) / float(len(data1))
+
+
 if __name__ == '__main__':
 
     k = DKmeans()
     datas = [[randint(0, 20) * 1.0, randint(0, 20) * 1.0] for _ in range(100)]
-    labels = k.cluster(datas, 5, 200 , diff = 0.00001)
+    labels = k.cluster(datas, 5, 200, diff=0.00001)
     print labels
