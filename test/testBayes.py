@@ -9,22 +9,19 @@ class Bayes(object):
     def __init__(self):
         pass
 
-   
-    def train(self, datas, labels, dense=True):
+    def train(self, datas, attr_len, labels, dense=True):
         '''
         P(C | I) = P(I | C ) * P(C) /  P(I)
         因为判断 I的存在这个类别概率大小 ， 所以I必然已经存在
         P(C|I) = P(I | C) * P(C) # I 是数据 ， C是类别
         '''
-
         self.label_status = Counter(labels)
-        self.attr_status = {i: {} for i in range(len(datas[0]))}
+        self.attr_status = {
+            i: defaultdict(lambda: defaultdict(float)) for i in range(attr_len)}
         for i in range(len(datas)):
-            for j in range(len(datas[i])):
+            for j in range(attr_len):
                 attr_val = datas[i][j]
                 # 统计每个属性对应 p(I | C) , I < (v1 , v2 ,v3....,vn)
-                if not self.attr_status[j].has_key(attr_val):
-                    self.attr_status[j][attr_val] = defaultdict(float)
                 self.attr_status[j][attr_val][labels[i]] += 1.
         # 计算每个属性出现val 时 ， P(v1|I,C)
         for feature, attr_label in self.attr_status.items():
@@ -45,13 +42,13 @@ class Bayes(object):
             [(类别概率,类别1) , (类别概率 ， 类别2).....(类别概率 ， 类别n)] ， 降序
         '''
         return sorted([(
-            sum(
-                [
-                    self.attr_status[i][data[i]][label]
-                    for i in range(len(data))
-                    if self.attr_status[i][data[i]].has_key(label)
-                ]
-            )
+            reduce(lambda x, y:x * y,
+                   [
+                       self.attr_status[i][data[i]][label]
+                       for i in range(len(data))
+                       if self.attr_status[i][data[i]].has_key(label)
+                   ]
+                   )
             *
             self.label_status[label], label
         )
@@ -60,8 +57,8 @@ class Bayes(object):
 
 
 if __name__ == '__main__':
-    data = [[1, 0], [0, 1], [1, 1] , [1 , 0 ]]
-    labels = [1, 0, 1 , 1 ]
+    data = [[1, 0], [0, 1], [1, 1], [1, 0]]
+    labels = [1, 0, 1, 1]
     b = Bayes()
-    b.train(data, labels)
-    print b.classify([0, 0])
+    b.train(data, 2, labels)
+    print b.classify([2, 0])
