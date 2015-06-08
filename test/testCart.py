@@ -14,6 +14,9 @@ class Node(object):
         self.left_tree = None
         self.right_tree = None
 
+    def __str__(self):
+        return '[split_attr : %s split_value : %s ]' % (self.split_attr, self.split_value)
+
 
 class CartTree(object):
 
@@ -44,18 +47,18 @@ class CartTree(object):
         label_dict = Counter(labels)
 
         if len(label_dict.keys()) == 1:
+
             return float(label_dict.keys()[0])
 
         if len(attrs) == 0:
-            return sum(label for label in labels) / len(labels)
+            return sum(label for label in labels) / float(len(labels))
 
         attr_gain, attr, split_value, left_data, left_label, right_data, right_label = self.get_best_feature(
             datas, labels, attrs)  # 得到最好信息增益的属性
-
         if attr_gain < threshold:
-            return sum(label for label in labels) / len(labels)
+            return sum(label for label in labels) / float(len(labels))
 
-        node = Node( attr , split_value )
+        node = Node(attr, split_value)
         child_attr = self.get_split_attr(  # 为下轮切割属性
             attrs, attr
         )
@@ -83,7 +86,7 @@ class CartTree(object):
             return sum(data[split_index] for data in datas) / float(len(datas))
         raise ValueError
 
-    def calc_gini(self, datas, labels, index, split_value):
+    def calc_gini(self, datas, labels, split_index, split_value):
         """计算属性值gini值
         参数：
             datas   数据集合
@@ -97,8 +100,9 @@ class CartTree(object):
         left_label = []
         right_data = []
         right_label = []
+        print split_index
         for i in range(len(labels)):
-            if datas[i][index] > split_value:
+            if datas[i][split_index] > split_value:
                 label_dist_dict[labels[i]][1] += 1
                 right_data.append(datas[i])
                 right_label.append(labels[i])
@@ -115,6 +119,7 @@ class CartTree(object):
 
     def get_best_feature(self, datas, labels, attrs):
         gini_min = float('inf')
+
         left_data = None
         left_label = None
         right_data = None
@@ -125,6 +130,7 @@ class CartTree(object):
             _split_value = self.get_split_value(datas, split_index)
             gini, _left_data, _left_label, _right_data, _right_label = self.calc_gini(
                 datas, labels, split_index, split_value)
+            print gini , attrs[split_index]
             if gini < gini_min:
                 gini_min = gini
                 split_attr = attrs[split_index]
@@ -147,9 +153,9 @@ class CartTree(object):
         '''
         if not isinstance(node, Node):
             return node
-        value = data[attrs[node.split_index]]
-        del data[attrs[node.split_index]]
-        del attrs[node.split_index]
+        value = data[attrs[node.split_attr]]
+        del data[attrs[node.split_attr]]
+        del attrs[node.split_attr]
         if value > node.split_value:
             return self.classify(data, attrs, node.right_tree)
         else:
@@ -160,9 +166,24 @@ class CartTree(object):
 
 
 if __name__ == '__main__':
-    datas = [[1, 0], [1, 1], [0, 1], [0, 0], [3, 0]]
-    labels = [1, 1, 1, 2, 2]
+    datas = [[1, 0, 0, 0],
+             [1, 0, 0, 1],
+             [1, 1, 0, 1],
+             [1, 1, 1, 0],
+             [1, 0, 0, 0],
+             [2, 0, 0, 0],
+             [2, 0, 0, 1],
+             [2, 1, 1, 1],
+             [2, 0, 1, 2],
+             [2, 0, 1, 2],
+             [3, 0, 1, 2],
+             [3, 0, 1, 1],
+             [3, 1, 0, 1],
+             [3, 1, 0, 2],
+             [3, 0, 0, 0]]
+    labels = [0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0]
     d = CartTree()
-    d.train(datas, [1, 2], labels)
-    print d.classify([0, 0])
+    d.train(datas, [1, 2, 3, 4], labels)
+    print d.tree
+    print d.classify([1, 0])
     print d.attrs
