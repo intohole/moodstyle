@@ -258,4 +258,4 @@ if __name__ == '__main__':
     data = [[1, 0, 'man'], [1, 1, 'man'], [0, 1, 'man'], [0, 0, 'woman'] , [3 , 0  , 'woman']]
     d = C45()
     d.train(data, [1, 2])
-    print d.classify([0, 0])
+    print d.classify([1, 0])
