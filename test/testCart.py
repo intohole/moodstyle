@@ -4,6 +4,7 @@
 from collections import Counter
 from collections import defaultdict
 import cPickle
+import copy 
 
 
 class Node(object):
@@ -57,11 +58,11 @@ class CartTree(object):
             datas, labels, attrs)  # 得到最好信息增益的属性
         if attr_gain < threshold:
             return sum(label for label in labels) / float(len(labels))
-
         node = Node(attr, split_value)
         child_attr = self.get_split_attr(  # 为下轮切割属性
             attrs, attr
         )
+       
         node.left_tree = self.__train(
             left_data, left_label, child_attr, threshold)
         node.right_tree = self.__train(
@@ -100,14 +101,13 @@ class CartTree(object):
         left_label = []
         right_data = []
         right_label = []
-        print split_index
         for i in range(len(labels)):
             if datas[i][split_index] > split_value:
-                label_dist_dict[labels[i]][1] += 1
+                label_dist_dict[labels[i]][1] += 1.
                 right_data.append(datas[i])
                 right_label.append(labels[i])
             else:
-                label_dist_dict[labels[i]][0] += 1
+                label_dist_dict[labels[i]][0] += 1.
                 left_data.append(datas[i])
                 left_label.append(labels[i])
         gini = 0.
@@ -115,11 +115,10 @@ class CartTree(object):
             prob = labels_dict[label] / float(len(labels))
             prob_label = label_dist_dict[label][1] / float(len(labels))
             gini += (prob * 2 * prob_label * (1 - prob_label))
-        return gini, left_label, left_label, right_data, right_label
+        return gini, left_data, left_label, right_data, right_label
 
     def get_best_feature(self, datas, labels, attrs):
         gini_min = float('inf')
-
         left_data = None
         left_label = None
         right_data = None
@@ -129,8 +128,7 @@ class CartTree(object):
         for split_index in range(len(attrs)):
             _split_value = self.get_split_value(datas, split_index)
             gini, _left_data, _left_label, _right_data, _right_label = self.calc_gini(
-                datas, labels, split_index, split_value)
-            print gini , attrs[split_index]
+                datas, labels, split_index, _split_value)
             if gini < gini_min:
                 gini_min = gini
                 split_attr = attrs[split_index]
@@ -153,16 +151,17 @@ class CartTree(object):
         '''
         if not isinstance(node, Node):
             return node
-        value = data[attrs[node.split_attr]]
-        del data[attrs[node.split_attr]]
+        print attrs 
+        value = data[attrs.index(node.split_attr)]
+        del data[attrs.index(node.split_attr)]
         del attrs[node.split_attr]
         if value > node.split_value:
-            return self.classify(data, attrs, node.right_tree)
+            return self._classify(data, attrs, node.right_tree)
         else:
-            return self.classify(data, attrs, node.left_tree)
+            return self._classify(data, attrs, node.left_tree)
 
     def classify(self, data):
-        return self._classify(data, self.attrs, self.tree)
+        return self._classify(copy.copy(data), copy.copy(self.attrs ) , self.tree)
 
 
 if __name__ == '__main__':
