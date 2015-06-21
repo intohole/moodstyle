@@ -9,14 +9,14 @@ import copy
 
 class Node(object):
 
-    def __init__(self,  split_attr, split_value):
+    def __init__(self, split_attr, split_value):
         self.split_attr = split_attr
         self.split_value = split_value
         self.left_tree = None
         self.right_tree = None
 
     def __str__(self):
-        return '[split_attr : %s split_value : %s ]' % (self.split_attr, self.split_value)
+        return '[split_attr : %s split_value : %s ] [left tree %s] [right tree %s ] ' % (self.split_attr, self.split_value , self.left_tree , self.right_tree)
 
 
 class CartTree(object):
@@ -37,13 +37,10 @@ class CartTree(object):
     def save(self, model_path):
         if not self.tree:
             raise ValueError, 'no model can save!'
-        with open(file_path, 'w') as f:
+        with open(model_path, 'w') as f:
             f.write(cPickle.dumps(self.tree))
 
-    def __train(self, datas, labels,  attrs, threshold=0.01):
-
-        if self.attrs is None:
-            self.attrs = attrs
+    def __train(self, datas, labels, attrs, threshold=0.01):
 
         label_dict = Counter(labels)
 
@@ -59,18 +56,40 @@ class CartTree(object):
         if attr_gain < threshold:
             return sum(label for label in labels) / float(len(labels))
         node = Node(attr, split_value)
-        child_attr = self.get_split_attr(  # 为下轮切割属性
+        child_attr = self.get_split_attr(# 为下轮切割属性
             attrs, attr
         )
-       
+        #创建左子树
         node.left_tree = self.__train(
-            left_data, left_label, child_attr, threshold)
+            self.split_data_by_attr(left_data , attrs , attr) , left_label, child_attr, threshold)
+        #创建
         node.right_tree = self.__train(
-            right_data, right_label, child_attr, threshold)
+            self.split_data_by_attr(right_data , attrs , attr), right_label, child_attr, threshold)
         return node
 
-    def train(self, datas, attrs,  labels, threshold=0.01):
-        self.tree = self.__train(datas, labels, attrs,  threshold)
+
+
+    
+    def split_data_by_attr(self, datas, attrs, attr_name):
+        '''
+        切割训练集为了下一步
+        datas :训练的数据 [[data]]
+        attrs 属性名称列表
+        attr_val 属性值
+        dense_data 是否是密集型数据 , 暂时废弃
+        '''
+        dump_datas = []
+        index = attrs.index(attr_name)
+        for data in datas:
+            dump = []
+            dump = data[:index]
+            dump.extend(data[index + 1:])
+            dump_datas.append(dump)
+        return dump_datas
+    
+    def train(self, datas, attrs, labels, threshold=0.01):
+        self.attrs = attrs
+        self.tree = self.__train(datas, labels, attrs, threshold)
 
     def get_split_attr(self, attrs, attr):
         split_attrs = []
@@ -161,7 +180,7 @@ class CartTree(object):
             return self._classify(data, attrs, node.left_tree)
 
     def classify(self, data):
-        return self._classify(copy.copy(data), copy.copy(self.attrs ) , self.tree)
+        return self._classify(copy.copy(data), copy.copy(self.attrs) , self.tree)
 
 
 if __name__ == '__main__':
