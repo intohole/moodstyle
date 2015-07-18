@@ -7,6 +7,10 @@ from collections import Counter
 from collections import defaultdict
 from math import sqrt
 import re
+from testDDistance import Manhattan
+from testDDistance import Hamming
+from testDDistance import Cosine
+from testDDistance import Euclidean
 from copy import copy
 
 '''
@@ -76,7 +80,6 @@ class Kmeans(object):
 class DKmeans(Kmeans):
 
     def distance(self, data1, data2):
-
         return sqrt(
             sum([
                 (data1[i] - data2[i]) ** 2
@@ -85,11 +88,20 @@ class DKmeans(Kmeans):
         )
 
 
+class ManhattanKmeans(Kmeans, Manhattan):
+
+    pass
 
 
-if __name__ == '__main__':
+class HammingKmeans(Kmeans, Hamming):
 
-    k = DKmeans()
-    datas = [[randint(0, 20) * 1.0, randint(0, 20) * 1.0] for _ in range(100)]
-    labels = k.cluster(datas, 5, 200, diff=0.00001)
-    print labels
+    pass
+
+
+class CosineKmeans(Kmeans, Cosine):
+    pass
+
+
+class EuclideanKmeans(Kmeans, Euclidean):
+    pass
+

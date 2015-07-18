@@ -44,7 +44,7 @@ class Cosine(DDdistance):
             raise ValueError
 
         return sum([data1[i] * data2[i] for i in range(len(data1))]) / (
-            math.sqrt(sum([data ** 2 for i in data1])) +
+            math.sqrt(sum([data ** 2 for data in data1])) +
             math.sqrt(sum([data ** 2 for data in data2]))
         )
 
@@ -56,7 +56,7 @@ class Hamming(DDdistance):
     """
 
     def distance(self, data1, data2):
-        return sum([1 if data1[i] == data2[i] for i in range(len(data1))]) / float(len(data1))
+        return sum([1 if data1[i] == data2[i] else 0 for i in range(len(data1))]) / float(len(data1))
 
 
 class Euclidean(DDdistance):
