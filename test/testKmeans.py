@@ -12,6 +12,7 @@ from testDDistance import Hamming
 from testDDistance import Cosine
 from testDDistance import Euclidean
 from copy import copy
+import sys
 
 '''
 处理数据的格式 [数据1,数据2]
@@ -66,7 +67,7 @@ class Kmeans(object):
 
     def update_centers(self, datas, labels, centers):
         centers_dict = {
-            center[1]: [0 for i in range(len(center))] for center in centers}
+            center[1]: [0 for i in range(len(center[0]))] for center in centers}
         label_dict = Counter(labels)
         for i in range(len(datas)):
             for j in range(len(datas[i])):
@@ -105,3 +106,10 @@ class CosineKmeans(Kmeans, Cosine):
 class EuclideanKmeans(Kmeans, Euclidean):
     pass
 
+
+if __name__ == '__main__':
+    k = HammingKmeans()
+    datas = [[randint(1, 20), randint(1, 20), randint(
+        1, 20), randint(1, 20)] for _ in range(100)]
+    labels = k.cluster(datas, 5, 200, diff=0.00001)
+    print labels
