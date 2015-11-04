@@ -21,6 +21,34 @@ import sys
 '''
 
 
+class Center(object):
+
+    def __init__(self, label, center_vector, distance_fun=None):
+        if not isinstance(label, (int, long, basestring)):
+            raise TypeError
+        if not isinstance(center_vector, (list, tuple)):
+            raise TypeError
+        self.label = label
+        self.vector = center_vector
+        if distance_fun is None or callable(distance_fun) is False:
+            self.distance_fun = self.default_distance_fun
+        else:
+            self.distance_fun = distance_fun
+
+    def __sub__(self, value):
+        if vector is None:
+            raise TypeError
+        if isinstance(vector):
+            return self.distance_fun(self.vector, vector)
+        elif isinstance(value, Center):
+            return self.distance_fun(self.vector, value.vector)
+        elif hasattr(value, "vector") and isinstance(getattr(value, "vector"), (list, tuple)):
+            return self.distance_fun(self.vector, value.vector)
+        else:
+            raise TypeError
+        return self.distance_fun(self.vector, vector)
+
+
 class Kmeans(object):
 
     def cluster(self, datas, k, iter_count=10000, diff=0.00001):
@@ -40,7 +68,6 @@ class Kmeans(object):
                  否则 ， 跳出循环
             返回数据labels
         '''
-
         centers = self.rand_seed(datas, k)
         center_range = range(len(centers))
         data_range = range(len(datas))
@@ -57,7 +84,6 @@ class Kmeans(object):
             if float(diff_labels) / len(datas) < diff:
                 break
             centers = self.update_centers(datas, labels, centers)
-            print _, 'iter'
         return labels, centers
 
     def rand_seed(self, datas, k):
@@ -108,8 +134,8 @@ class EuclideanKmeans(Kmeans, Euclidean):
 
 
 if __name__ == '__main__':
-    k = HammingKmeans()
+    k = DKmeans()
     datas = [[randint(1, 20), randint(1, 20), randint(
-        1, 20), randint(1, 20),randint(1, 20)] for _ in range(100)]
+        1, 20), randint(1, 20), randint(1, 20)] for _ in range(100)]
     labels = k.cluster(datas, 5, 200, diff=0.00001)
     print labels

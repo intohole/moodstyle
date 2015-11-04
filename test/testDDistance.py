@@ -21,6 +21,17 @@ class Manhattan(DDdistance):
         return sum([abs(data1[i] - data2[i]) for i in range(len(data1))])
 
 
+class DefaultDistance(DDdistance):
+
+    def distance(self, data1, data2):
+        return math.sqrt(
+            sum([
+                (data1[i] - data2[i]) ** 2
+                for i in range(len(data1))
+            ])
+        )
+
+
 class Chebyshev(DDdistance):
 
     """
