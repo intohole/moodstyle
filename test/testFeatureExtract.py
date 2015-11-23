@@ -1,36 +1,37 @@
-#!/usr/bin/env python
-# coding:utf-8
-
-
+#coding=utf-8
 import math
-import collections import defaultdict
+from collections import defaultdict
 
 
 class Document(object):
 
-    """
-    整个是一个封装的 dict{}
-    分别为  word - > 分类类别 -> 词数目
+    """文本属性统计文档与词的统计关系，主要为了提取文本特征使用
     """
 
     def __init__(self):
-        self.__doc = {}  # 所有词的ｓｅｔ
+        self._word_class_count = defaultdict(lambda : defaultdict(int))  # word -> 分类 ->次数
         self.doc_count = 0  # 文档数目
-        self.__type_count = {}  # 　ｗｏｒｄ　-> 分类类别　-> 数目
+        self._class_count = defaultdict(int) # 每个类别数目
 
-    def insert_document(self, doc_type, document={}):
-        '''
-        插入一个ｄｏｃ
-        doc_type (str , unicode ) 分类名称
-        document (set) 一个文档所含有不重复词
-        抛出异常　TypeError 
-        '''
-        if not isinstance(document, (set, list)):
+    def insert_document(self, doc_type, document= []):
+        """添加训练文档
+            params:
+                doc_type    文本分类名称
+                document    文档词集合 
+            return
+                False   如果文档词为空，则返回False
+                True
+        """       
+        if isinstance(document, (set, list)) is False:
             raise TypeError, 'document  must is list or set'
+        if len(document) == 0:
+            return False
         for word in document:
-            self.__insert_doc_dict(doc_type, word)
-        self.__insert_type_dict(doc_type)
-        self.doc_count = self.doc_count + 1
+            if word:
+                self._word_class_count[word][doc_type] += 1
+        self._class_count[doc_type] += 1
+        self.doc_count += 1
+        return True
     # 获得word在所有文档的总数量
 
     def get_word_count(self, word):
@@ -39,19 +40,10 @@ class Document(object):
         word -> (str , unicode)
 
         '''
-        if not (word and isinstance(word, (str, unicode))):
-            raise TypeError, 'word must be is str or unicode : %s' % word
-        count = 0
-        if self.__doc.has_key(word):
-            for _key, _val in self.__doc[word].items():
-                count = count + _val
-        return count
+        if word and isinstance(word , basestring):
+            return sum(value for value in self._word_class_count[word].values())
+        return 1 
 
-    def __insert_type_dict(self, doc_type):
-        count = 1
-        if self.__type_count.has_key(doc_type):
-            count = self.__type_count[doc_type] + 1
-        self.__type_count[doc_type] = count
 
     def get_type_word_count(self, doc_type, word):
         '''
@@ -59,41 +51,28 @@ class Document(object):
         doc_type 分类名称
         word 词
         '''
-        if self.__doc.has_key(word):
-            if self.__doc[word].has_key(doc_type):
-                return self.__doc[word][doc_type]
-        return 0
+        return self._word_class_count[word][doc_type]
 
-    def __insert_doc_dict(self, doc_type, word):
-        __value = 1
-        if self.__doc.has_key(word):
-            if self.__doc[word].has_key(doc_type):
-                __value = self.__doc[word][doc_type] + 1
-        else:
-            self.__doc[word] = {}
-        self.__doc[word][doc_type] = __value
 
     def get_doc_count(self, doc_type):
         '''
         某个分类的文档数目
         doc_type
         '''
-        if doc_type and isinstance(doc_type, (str, unicode)):
-            if self.__type_count.has_key(doc_type):
-                return self.__type_count[doc_type]
-        return 0
+        return self._class_count[doc_type]
+
 
     def get_word_set(self):
         '''
         得到所有词的ｓｅｔ
         '''
-        return self.__doc.keys()
+        return self._word_class_count.keys()
 
     def get_type_set(self):
         '''
         得到所有分类类别
         '''
-        return self.__type_count.keys()
+        return self._class_count.keys()
 
 
 class ITextFeatureScore(object):
@@ -147,11 +126,18 @@ class TextFeature(object):
         self.min_word_count = min_word_count
 
     def extract_feature(self, doc, top_word=0.01):
+        """从文档统计集合中，抽取文本特征
+            params: 
+                doc 文本统计信息集合 Document类
+                top_word    抽取文本特征词比例
+            return
+                文档分类 文档分类词集合
+        """
         doc_word_score_map = defaultdict(
             lambda: defaultdict(float))  # 文档 -> 词 -> 分值
         for word in doc.get_word_set():
             for doc_type in doc.get_type_set():
-                if self.filter(doc)
+                if self.filter(doc , doc_type , word):
                     continue
                 score = self.text_feature_score(
                     doc.get_type_word_count(doc_type, word),
@@ -161,10 +147,9 @@ class TextFeature(object):
                 )
                 doc_word_score_map[doc_type][word] = score
         # 对所有按照分值大小排序
-
         for doc_type, word_score in doc_word_score_map.items():  
             sorted_doc_word_by_score = sorted(
-                word_score.iteritems(),  key=lambda x: x[1], reverse=True)
+                word_score.items(),  key=lambda x: x[1], reverse=True)
             get_top = len(sorted_doc_word_by_score) * top_word
             yield doc_type , [word[0]   for word in sorted_doc_word_by_score][0:int(get_top)]
 
@@ -180,7 +165,7 @@ class TextFeature(object):
         '''
         raise NotImplementedError
 
-    def filter(self, ):
+    def filter(self, doc , doc_type , word):
         word_count_doc = doc.get_type_word_count(doc_type, word)
         return word_count_doc <= self.min_word_count or word_count_doc < long(doc.get_doc_count(doc_type) * self.filter_rate)
 
@@ -193,7 +178,6 @@ class IM(TextFeature):
     '''
 
     def text_feature_score(self, doc_word_count, doc_count, word_count, doc_sum):
-
         return math.log(float(doc_sum * doc_word_count) / float(doc_count * word_count), 2)
 
 
@@ -237,5 +221,3 @@ class WLLR(TextFeature):
 
 class IG(TextFeature):
     # 信息增益
-
-    pass
