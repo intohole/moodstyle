@@ -100,7 +100,7 @@ class CartTree(object):
 
     def get_split_value(self, datas, split_index):
         '''
-        得到cart树，分割数据点index，中位数
+        得到cart树，分割数据点index，平均数
         '''
         if len(datas):
             return sum(data[split_index] for data in datas) / float(len(datas))

@@ -17,8 +17,10 @@ class Logistic(object):
                 self.params[j] += (alpha * datas[i][j] * error)
 
     def classify(self, data):
-        _val = sum([data[i] * self.params[i] for i in range(len(self.params))]) 
+        _val = sum([data[i] * self.params[i] for i in range(len(self.params))])
         return min([abs(label - _val  , label) for label in self.labels ])
+
+
     def sigmod(self, x):
 
         return 1. / (1 + exp(-x))
