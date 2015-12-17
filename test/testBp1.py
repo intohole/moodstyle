@@ -7,21 +7,18 @@ import random
 class Neroun(object):
 
 
-    def __init__(self , weight_len):
+    def __init__(self , weight_len , rate = 0.1 , delta = random.uniform(1 , -1)):
         self.weights = self.init_weights(weight_len)                
-        self.delta = 0.
+        self.delta = delta  
         self.weight_len = weight_len
         self.weight_range = range(weight_len)
         self.rate = rate 
 
-    def init_weights(self , weight_len):
-        weights = [0.] * weight_len
-        for i in range(weight_len):
-            weights[i] = random.random()
-        return weights
+    def init_weights(self , weight_len  , weight_max = 0.5 , weight_min = -0.5):
+        return [ random.uniform(weight_max , weight_min) for i in range(weight_len)]
 
-    def get_value(self , inputs):
-        return self.simgod( sum(inputs[i]  * self.weights[i] for i in self.weight_range) + self.delta)            
+    def predict(self , inputs):
+        return self.simgod( sum( value * weight for value , weight in zip(inputs ,self.weights)) + self.delta)            
 
     def simgod(self , value):
         return 1. / ( 1 + math.exp(-value))
@@ -39,12 +36,12 @@ class Layer(object):
 
 
 
-    def __init__(self , inputs_len ,neroun_len):
-        self.nerouns = [ Neroun(inputs_len)  for i in range(neroun_len)]
+    def __init__(self , inputs_len ,neroun_len , learn_rate = 0.1):
+        self.nerouns = [ Neroun(inputs_len , rate = learn_rate)  for i in range(neroun_len)]
         self.nerouns_len = neroun_len
     
     def predict(self , inputs ):
-        return [self.nerouns[i].get_value(inputs) for i in range(self.nerouns_len)]
+        return [self.nerouns[i].predict(inputs) for i in range(self.nerouns_len)]
 
     def update(self , targets , predicts):
         return [ self.nerouns.update(targets[i] - predicts[i]) for i in range(self.nerouns_len)]
@@ -67,18 +64,19 @@ class Bp(object):
     def predict(self , inputs):
         if len(inputs)  != self.input_layer_len:
             raise Exception 
-        hidden_outputs = self.hidden_layer.get_value(inputs)
-        outputs = self.output_layer.get_value(hidden_outputs)
+        hidden_outputs = self.hidden_layer.predict(inputs)
+        outputs = self.output_layer.predict(hidden_outputs)
         return outputs
 
 
-    def train(self , inputs ,targets ):
+    def update(self , inputs ,targets ):
         predicts = self.predict(inputs)
         self.output_layer.update( targets , errors)
-
+    
+    
 
 
 if __name__ == "__main__":
 
     bp = Bp(3 , 4 , 4)
-    print bp.get_value([2. , 3. ,1.])
+    print bp.predict([2. , 3. ,1.])

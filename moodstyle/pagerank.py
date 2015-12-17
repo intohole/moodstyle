@@ -34,19 +34,19 @@ class PageRank(object):
         for _ in range(iters):
             tmp_weights = copy(self.weights)
             cur_max_diff = 0.
-            for i in self.__iter:
-                for j in self.__iter:
-                    #如果边 j 对 i 没有入链 或者两个点相同 ， 则不处理
-                    if self.edges[i][j] == 0 or i == j :
-                        continue
-                    weight = 0. 
-                    for in_j in self.__iter:
-                        weight[in_j][i]
-
-
-
-                self.weights[i] = (1 - d) *
-
+#            for i in self.__iter:
+#                for j in self.__iter:
+#                    #如果边 j 对 i 没有入链 或者两个点相同 ， 则不处理
+#                    if self.edges[i][j] == 0 or i == j :
+#                        continue
+#                    weight = 0. 
+#                    for in_j in self.__iter:
+#                        weight[in_j][i]
+#
+#
+#
+#                self.weights[i] = (1 - d) *
+#
 
 if __name__ == '__main__':
     p = PageRank(5)

@@ -5,19 +5,26 @@ from collections import defaultdict
 
 
 class Bayes(object):
-
-    def __init__(self):
-        pass
+    
 
     def train(self, datas, attr_len, labels, dense=True):
-        '''
-        P(C | I) = P(I | C ) * P(C) /  P(I)
-        因为判断 I的存在这个类别概率大小 ， 所以I必然已经存在
-        P(C|I) = P(I | C) * P(C) # I 是数据 ， C是类别
-        '''
+        """贝叶斯训练函数 
+            params:
+                datas 训练数据 ， [[]]
+                attr_len 属性长度
+                labels 分类数组 ， 与datas对应
+                dense 是否为稀疏矩阵，现在只支持dense=True
+            return
+                None
+            raise 
+                None
+        """
         self.label_status = Counter(labels)
+        self.default_prob = defaultdict(float)
         self.attr_status = {
             i: defaultdict(lambda: defaultdict(float)) for i in range(attr_len)}
+        self.base_count = len(datas)
+        self.attr_range = range(attr_len)
         for i in range(len(datas)):
             for j in range(attr_len):
                 attr_val = datas[i][j]
@@ -28,19 +35,60 @@ class Bayes(object):
             for attr_val, label in self.attr_status[feature].items():
                 for cl in label.keys():
                     self.attr_status[feature][attr_val][
-                        cl] /= self.label_status[cl]
+                        cl] /= ( self.label_status[cl] + self.base_count)
+        for label in self.label_status.keys():
+            self.default_prob[label] = 1. / ( self.label_status[label] + self.base_count)
         # 计算所有类别出现的概率 P(C) = sum(Cn) / sum(C) , n < (1,2,3,4,5....n)
         labels_count = float(sum(self.label_status.values()))
         for label, count in self.label_status.items():
             self.label_status[label] /= labels_count
 
-    def classify(self, data):
-        '''
-        P(I | C ) * P(C) /  P(I)
-        data : list , tuple -> [v1n , v2n ,v3n]
-        返回：
-            [(类别概率,类别1) , (类别概率 ， 类别2).....(类别概率 ， 类别n)] ， 降序
-        '''
+    def _predict(self , data , label):
+        prob = 1. 
+        for i in self.attr_range:
+            value = data[i] 
+            prob *= self.get_prob(i , value , label)        
+        return prob * self.label_status[label]
+
+    def get_prob(self , attr_index , value ,label ):
+        """得到在指定序号下value在特定类别下发生概率
+            params
+                attr_index 暂定为属性序号
+                value   属性值
+                label   类别
+            return 
+                prob    发生概率
+            raise 
+                None
+        """
+        if value in self.attr_status[attr_index]:
+            if label in self.attr_status[attr_index][value]:
+                return self.attr_status[attr_index][value][label]
+        return self.default_prob[label] 
+
+    
+    
+    def predict(self, data):
+        """对输入数据进行预测
+            params:
+                data
+            return 
+                label 数据标记
+            raise
+                None
+        """
+        return max(( self._predict(data , label),label ) for label in self.label_status.keys())
+ 
+    def predict_old(self, data):
+
+        """对输入数据进行预测
+            params:
+                data
+            return 
+                label 数据标记
+            raise
+                None
+        """
         return sorted([(
             reduce(lambda x, y:x * y,
                    [
@@ -55,10 +103,9 @@ class Bayes(object):
             for label in self.label_status.keys()
         ], reverse=True)
 
-
-if __name__ == '__main__':
-    data = [[1, 0], [0, 1], [1, 1], [1, 0]]
-    labels = [1, 0, 1, 1]
+if __name__ == "__main__":
     b = Bayes()
-    b.train(data, 2, labels)
-    print b.classify([2, 0])
+    datas = [ [ 0 , 0 ] , [0 , 1] , [1 , 1]  ,[1 , 0]]
+    labels = [ 0 , 1 , 0 , 1]
+    b.train(datas , 2 ,labels = labels) 
+    print b.predict([ 2 , 1])

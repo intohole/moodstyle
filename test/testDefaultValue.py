@@ -13,7 +13,8 @@ class ArvgMissingValue(object):
         self.default_values = [None for i in range(feature_len)]
 
     def add(self, feature, value):
-        self.default_values[feature] = value 
-        if self.default_values[feature] is None
-        else (self.default_values[feature] + value)
-
+        
+        self.default_values[feature] = value
+        #if self.default_values[feature] is None
+        #else (self.default_values[feature] + value)
+        

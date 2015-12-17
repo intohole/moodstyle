@@ -221,3 +221,4 @@ class WLLR(TextFeature):
 
 class IG(TextFeature):
     # 信息增益
+    pass

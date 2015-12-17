@@ -2,3 +2,11 @@
 *swp
 *out
 *err
+moodstyle/cool
+
+
+
+# install create folder
+build/
+dist/
+moodstyle.egg-info/
