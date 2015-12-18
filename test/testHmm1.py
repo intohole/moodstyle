@@ -1,10 +1,4 @@
-# coding=utf-8
-'''
-
-'''
-
-
-
+#coding=utf-8
 
 
 
@@ -176,55 +170,38 @@ class TrainHmm(object):
                 self.hmm.emission_probability[hide_state][obs_state] = (
                     self.hmm.emission_probability[hide_state][obs_state] + 1.) / self.hmm.states_count[hide_state]
 
+                
+class TrainSeg(object):
+    
+    def __init__(self , states = ['s' , 'e' , 'm' ,'b']):
+        self.model = TrainHmm(states)
+
+    
+    def add_line(self , line):
+        if len(line) == 0:
+            words = line.split()
+            for word in words:
+                for item in self.word_state(word):
+                    self.model.add_item(item)
+            return True
+    
+    def word_state(self , word):
+        if len(word) == 0:
+            yield
+        elif len(word) == 1:
+            yield HmmItem(word , 's')
+        elif len(word) == 2:
+            yield HmmItem(word, 'b')
+            yield HmmItem(word , 'e')
+        elif len(word) >=3:
+            yield HmmItem(word , 'b')
+            for w in word[1:-1]:
+                yield HmmItem(word , 'm')
+            yield HmmItem(word , 'e')
+
 
 if __name__ == '__main__':
-    import os
-    import re
-    t = Hmm('d:/model.bin')
-    print t.viterbi(u'我')
-
-    # t = TrainHmm(['s' , 'b' ,'m' ,'e'])
-    # import codecs
-
-    # word_split = re.compile('/[a-z]+ ?')
-    # diff = set()
-    # chinese = 'd:/data/chinese/'
-    # hmmItems = HmmItems()
-    # for file_name in os.listdir(chinese):
-    #     file_path = '%s%s' % (chinese, file_name)
-    #     with open(file_path) as f:
-    #         content = f.readlines()
-    #     try:
-    #         wd = content[2].split('：')[1].strip()
-    #     except Exception, e:
-    #         print file_path, e
-    #         continue
-    #     print 'read file %s , read line %s' % (file_path  , len(content))
-    #     for line in content[6:]:
-    #         line = line.strip().replace(' [%s]' % wd, wd).replace(
-    #             ' [%s] ' % wd, wd).replace('[%s] ' % wd, wd).split("\t")[2]
-    #         if line in diff:
-    #             continue
-    #         diff.add(line)
-    #         del hmmItems[:]
-    #         hmmItems = HmmItems()
-    #         line = line.decode('utf-8')
-    #         words = word_split.split(line.strip())
-    #         for word in words:
-    #             # word = word.decode('utf-8')  # 因为汉字是utf-8
-    #             word = word.strip()
-    #             if len(word) == 1:
-    #                 hmmItems.append((word, 's'))
-    #             elif len(word) == 2:
-    #                 hmmItems.append((word[0], 'b'))
-    #                 hmmItems.append((word[1], 'e'))
-    #             elif len(word) > 2:
-    #                 hmmItems.append((word[0], 'b'))
-    #                 for mid_word in word[1:-1]:
-    #                     hmmItems.append((mid_word, 'm'))
-    #                 hmmItems.append((word[-1], 'e'))
-    #         if len(hmmItems) == 0 :
-    #             continue
-    #         t.add_item(hmmItems)
-    # t.translate()
-    # t.save('d:/model.bin')
+    
+    t = TrainSeg()
+    t.add_line('我 爱 中国！')
+    t.model.translate()
