@@ -136,8 +136,15 @@ class TrainHmm(object):
         with open(model_path, 'wb') as f:
             dump(self.hmm, f)
 
-    def add_item(self, hmmitems):
-
+    def add_items(self, hmmitems):
+        """将序列转换为hmmitems ，添加hmm训练器
+            params
+                hmmitems HmmItems
+            return 
+                None
+            raise 
+                None
+        """
         for i in range(len(hmmitems) - 1):
             self.hmm.transition_probability[hmmitems[i].hide][
                 hmmitems[i + 1].hide] += 1
@@ -181,6 +188,7 @@ class TrainSeg(object):
         if len(line) == 0:
             words = line.split()
             for word in words:
+                self
                 for item in self.word_state(word):
                     self.model.add_item(item)
             return True

@@ -29,16 +29,22 @@ class Dictionary(dict):
         word_counter = collections.Counter(words.split())
         vector = [0] * len(self)
         for word,count in word_counter.items():
-            vector[self[word]] = count
+            if word in self:
+                vector[self[word]] = count
         return vector
     
     def to_one_hot(self , words):
         words = set(words.split())
         vector = [0] * len(self)
         for word in words:
-            vector[self[word]] = count 
+            if word in self:
+                vector[self[word]] = count 
         return vector
 
+
+class ListMap(list):
+
+    pass
 
 if __name__ == "__main__":
     d = Dictionary(words = ["a" , "b" ,"c"])

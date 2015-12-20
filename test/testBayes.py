@@ -1,8 +1,8 @@
-# coding=utf-8
+#coding=utf-8
 
 from collections import Counter
 from collections import defaultdict
-
+import sys
 
 class Bayes(object):
     
@@ -42,12 +42,12 @@ class Bayes(object):
         labels_count = float(sum(self.label_status.values()))
         for label, count in self.label_status.items():
             self.label_status[label] /= labels_count
-
     def _predict(self , data , label):
         prob = 1. 
         for i in self.attr_range:
-            value = data[i] 
-            prob *= self.get_prob(i , value , label)        
+            if data[i] == 0:
+                continue
+            prob *= self.get_prob(i , data[i], label)        
         return prob * self.label_status[label]
 
     def get_prob(self , attr_index , value ,label ):
@@ -77,7 +77,8 @@ class Bayes(object):
             raise
                 None
         """
-        return max(( self._predict(data , label),label ) for label in self.label_status.keys())
+        probs = [( self._predict(data , label),label ) for label in self.label_status.keys() ]
+        return sorted(probs, key = lambda x:x[0] , reverse = True)[0]
  
     def predict_old(self, data):
 

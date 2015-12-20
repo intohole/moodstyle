@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 kw = dict(
     name='moodstyle',
-    version='0.0.2',
+    version='0.0.3',
     description='data mining python code',
     author='intoblack',
     author_email='intoblack86@gmail.com',

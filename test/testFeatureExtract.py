@@ -35,45 +35,62 @@ class Document(object):
     # 获得word在所有文档的总数量
 
     def get_word_count(self, word):
-        '''
-        获得一个词在所有分类中的数目
-        word -> (str , unicode)
-
-        '''
+        """获得词在Doc中的数目
+            params 
+                word 查询词
+            return
+                count 返回单词数目 ，为了避免出现空的情况，默认值为1. 
+            raise 
+                None
+        """
         if word and isinstance(word , basestring):
             return sum(value for value in self._word_class_count[word].values())
-        return 1 
+        return 1. 
 
 
     def get_type_word_count(self, doc_type, word):
-        '''
-        得到某个分类下　，　ｗｏｒｄ数目
-        doc_type 分类名称
-        word 词
-        '''
+        """返回指定类别的词组数目
+            params
+                doc_type    类别名称
+                word        查询词组
+            return
+                count   某类别下的词组数目
+        """
         return self._word_class_count[word][doc_type]
 
 
     def get_doc_count(self, doc_type):
-        '''
-        某个分类的文档数目
-        doc_type
-        '''
+        """得到某类别文档数目
+            params
+                doc_type    指定的类别名称
+            return
+                count   指定类别名的文档数目
+        """            
         return self._class_count[doc_type]
 
 
     def get_word_set(self):
-        '''
-        得到所有词的ｓｅｔ
-        '''
+        """获得所有doc下的所有词
+            params
+                None
+            return
+                list 所有词的list
+        """
         return self._word_class_count.keys()
 
     def get_type_set(self):
-        '''
-        得到所有分类类别
-        '''
+        """返回doc下所有类别
+            param
+                None
+            return 
+               list     doc下所有类别名称 
+            raise 
+                None
+        """
         return self._class_count.keys()
-
+    
+    def __str__(self):
+        return "doc:" + str(self.get_type_set()) + "\t\twords:%s" + str(self.get_word_set()) + "\n"  
 
 class ITextFeatureScore(object):
 
@@ -95,26 +112,39 @@ class ITextFeatureScore(object):
 
 
 class CreateDocument(object):
-    doc = Document()
 
-    def insert_document_list(self, doc_name, contents, word_term=1, word_split=' '):
+    def __init__(self):
+        self.doc = Document()
+
+    def insert_document_list(self, doc_name, contents, ngram=1, word_split=' '):
+        """创建Document类接口 ， 添加分类为doc_name 的内容 contents
+            params 
+                doc_name    分类名称
+                contents    分类文档内容 ， 类型字符串或者list ， tuple
+                ngram       ngram算法，默认值为1 
+                word_split  如果提交contents 为字符串，分隔符使用word_split
+            return
+                None
+            raise 
+                None
+        """
         if doc_name and len(doc_name) > 0:
             if contents and isinstance(contents, (list, tuple)) and len(contents) > 0:
                 for line in contents:
                     self.doc.insert_document(
-                        doc_name, self.text_extract(line, word_term, word_split))
+                        doc_name, self.text_extract(line, ngram , word_split))
             elif isinstance(contents, (str, unicode)):
                 self.doc.insert_document(
-                    doc_name, self.text_extract(line, word_term, word_split))
+                    doc_name, self.text_extract( contents, ngram, word_split))
             return
         raise TypeError, 'doc_name is string and contents is list or tuple which element is string or unicode!'
     # 提取句子的几元文法
 
-    def text_extract(self, line, word_count=2,  word_split=' '):
-        if line and isinstance(line, (str, unicode)):
-            lineArry = [word.strip()
-                        for word in line.split(word_split) if word.strip() != '']
-            return [' '.join(lineArry[i: i + word_count]) for i in range(len(lineArry) - 1)]
+    def text_extract(self, words , ngram = 2,  word_split = None):
+        if words and isinstance(words , (str, unicode)):
+            words_items = [word.strip()
+                        for word in words.split(word_split) if words.strip() != '']
+            return [' '.join(words_items[i: i + ngram]) for i in range(len(words_items) - ngram + 1)]
         else:
             raise TypeError
 
