@@ -163,10 +163,12 @@ class TrainHmm(object):
                 state] / startsCount
         # 转移矩阵
         hide_state_keys = self.hmm.transition_probability.keys()
+        hide_stats_count = sum(self.hmm.states_count.values())
+        print hide_stats_count 
         for hide_state in hide_state_keys:
             for after_hide_state in hide_state_keys:
-                self.hmm.transition_probability[hide_state][after_hide_state] = self.hmm.transition_probability[hide_state][
-                    after_hide_state] / self.hmm.states_count[hide_state]
+                self.hmm.transition_probability[hide_state][after_hide_state] = ( self.hmm.transition_probability[hide_state][
+                    after_hide_state] + 1.0) / ( self.hmm.states_count[hide_state] + hide_stats_count)
         # 可观察状态下的隐藏状态发生概率
         for hide_state in self.hmm.emission_probability.keys():
             for obs_state in self.hmm.obs_state.keys():
@@ -175,7 +177,7 @@ class TrainHmm(object):
                 # p(hide_state | obs_state)
                 # p(A|B) = P(AB) / P(B) = Count(AB) / count(Br)
                 self.hmm.emission_probability[hide_state][obs_state] = (
-                    self.hmm.emission_probability[hide_state][obs_state] + 1.) / self.hmm.states_count[hide_state]
+                    self.hmm.emission_probability[hide_state][obs_state] + 1.) / ( self.hmm.states_count[hide_state] + states_count ) 
 
                 
 class TrainSeg(object):

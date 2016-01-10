@@ -6,18 +6,6 @@ from testBaseStrut import WeightArray
 
 
 
-
-class HTree(object):
-
-
-    def __init__(self , left_data , right_data , datas):
-        self.left_data = left_data
-        self.right_data = right_data 
-        self.datas = datas
-
-    
-
-
 class HierarchicalClustering(object):
 
     def __init__(self):

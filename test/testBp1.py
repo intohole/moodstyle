@@ -22,7 +22,10 @@ class Neroun(object):
 
     def simgod(self , value):
         return 1. / ( 1 + math.exp(-value))
-
+    
+    def disgod(self , target):
+        return target * (1 - target)
+    
     def __len__(self):
         return self.weight_len 
 
@@ -46,7 +49,8 @@ class Layer(object):
     def update(self , targets , predicts):
         return [ self.nerouns.update(targets[i] - predicts[i]) for i in range(self.nerouns_len)]
 
-
+    def get_delta(self , vtargets , predicts):
+        
 
 
 class Bp(object):
@@ -69,11 +73,11 @@ class Bp(object):
         return outputs
 
 
-    def update(self , inputs ,targets ):
-        predicts = self.predict(inputs)
+    def update(self , predicts ,targets ):
+        errors = [ (pre - tar) for pre , tar in zip(predicts , targets)]
         self.output_layer.update( targets , errors)
     
-    
+        return  
 
 
 if __name__ == "__main__":

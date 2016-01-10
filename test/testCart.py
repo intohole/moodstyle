@@ -24,7 +24,7 @@ class CartTree(object):
     def __init__(self):
         self.tree = None
         self.attrs = None
-
+        self.attrs_dict = {}
     def load_model(self, file_path):
         '''
         加载模型  
@@ -41,16 +41,13 @@ class CartTree(object):
             f.write(cPickle.dumps(self.tree))
 
     def __train(self, datas, labels, attrs, threshold=0.01):
-
+        """train函数调用的真正训练函数
+        """
         label_dict = Counter(labels)
-
         if len(label_dict.keys()) == 1:
-
             return float(label_dict.keys()[0])
-
         if len(attrs) == 0:
             return sum(label for label in labels) / float(len(labels))
-
         attr_gain, attr, split_value, left_data, left_label, right_data, right_label = self.get_best_feature(
             datas, labels, attrs)  # 得到最好信息增益的属性
         if attr_gain < threshold:
@@ -89,6 +86,7 @@ class CartTree(object):
     
     def train(self, datas, attrs, labels, threshold=0.01):
         self.attrs = attrs
+        self.attrs_dict = {attr : index for index , attr in enumerate(attrs)}
         self.tree = self.__train(datas, labels, attrs, threshold)
 
     def get_split_attr(self, attrs, attr):
@@ -137,6 +135,16 @@ class CartTree(object):
         return gini, left_data, left_label, right_data, right_label
 
     def get_best_feature(self, datas, labels, attrs):
+        """得到datas数据中最好的分割属性
+            params:
+                datas               训练数据 eg,[[1 , 3, ,4]]
+                labels              根据训练数据对应的label
+                attrs               训练属性列表
+            return
+                
+            raise:
+                None
+        """
         gini_min = float('inf')
         left_data = None
         left_label = None
@@ -159,29 +167,29 @@ class CartTree(object):
         return gini_min, split_attr, split_value, left_data, left_label, right_data, right_label
 
     def _classify(self, data, attrs, node):
-        '''
-        功能： 用于分类模型
-        参数 ：
-            data 待分析的数据 ， list
-        返回:
-            返回决策树的label
-        思想 ： 每层树的节点 {节点1：{val1 ：节点2：{val3 ：{。。。。{valn ： label }}}
-        第一层是key 下一层是val 第三层是key 第四层是val 。。。。 直到出现val
-        '''
-        if not isinstance(node, Node):
+        if isinstance(node, Node) is False:
             return node
-        print attrs 
-        value = data[attrs.index(node.split_attr)]
-        del data[attrs.index(node.split_attr)]
-        del attrs[node.split_attr]
+        value = data[self.attrs_dict[node.split_attr]]
+        if node.left_tree is None and node.right_tree is None:
+            return value
         if value > node.split_value:
             return self._classify(data, attrs, node.right_tree)
         else:
             return self._classify(data, attrs, node.left_tree)
 
     def classify(self, data):
-        return self._classify(copy.copy(data), copy.copy(self.attrs) , self.tree)
-
+        """对输入的数据进行打分
+            params
+                data            输入数据，输入类型为list
+            return
+                value           cart树返回数值
+            raise 
+                Exception
+        """
+        if data and isinstance(data , (list,tuple)) and  len(data) and len(self.attrs): 
+            return self._classify(copy.copy(data), self.attrs , self.tree)
+        else:
+            raise ValueError,"data is list , eg [0  , 1 ,3 ...] ; data length is equal train attrs"
 
 if __name__ == '__main__':
     datas = [[1, 0, 0, 0],
@@ -203,5 +211,5 @@ if __name__ == '__main__':
     d = CartTree()
     d.train(datas, [1, 2, 3, 4], labels)
     print d.tree
-    print d.classify([1, 0])
+    print d.classify([3, 1 , 0 , 0])
     print d.attrs
