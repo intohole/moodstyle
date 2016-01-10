@@ -1,9 +1,11 @@
-*.pyc
+*pyc
 *swp
 *out
 *err
 moodstyle/cool
-
+.settings
+.pydevproject
+.project
 
 
 # install create folder

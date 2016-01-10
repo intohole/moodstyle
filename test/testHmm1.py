@@ -67,13 +67,13 @@ class HmmModel(object):
         self.transition_probability = self.create_transition_probability(states)
         self.emission_probability = self.create_emission_probability(states)
 
-    def create_start_states(self, states, init_value=1.):
+    def create_start_states(self, states, init_value=0.):
         start_states = defaultdict(float)
         for state in states:
             start_states[state] += init_value
         return start_states
 
-    def create_transition_probability(self, states, init_value=1.):
+    def create_transition_probability(self, states, init_value=0.):
         transition_probability = {}
         for state in states:
             transition_probability[state] = defaultdict(float)
@@ -164,7 +164,6 @@ class TrainHmm(object):
         # 转移矩阵
         hide_state_keys = self.hmm.transition_probability.keys()
         hide_stats_count = sum(self.hmm.states_count.values())
-        print hide_stats_count 
         for hide_state in hide_state_keys:
             for after_hide_state in hide_state_keys:
                 self.hmm.transition_probability[hide_state][after_hide_state] = ( self.hmm.transition_probability[hide_state][
@@ -177,7 +176,7 @@ class TrainHmm(object):
                 # p(hide_state | obs_state)
                 # p(A|B) = P(AB) / P(B) = Count(AB) / count(Br)
                 self.hmm.emission_probability[hide_state][obs_state] = (
-                    self.hmm.emission_probability[hide_state][obs_state] + 1.) / ( self.hmm.states_count[hide_state] + states_count ) 
+                    self.hmm.emission_probability[hide_state][obs_state] + 1.) / ( self.hmm.states_count[hide_state] + hide_stats_count ) 
 
                 
 class TrainSeg(object):
@@ -187,12 +186,13 @@ class TrainSeg(object):
 
     
     def add_line(self , line):
-        if len(line) == 0:
-            words = line.split()
+        if len(line) != 0:
+            words = line.decode("utf-8").split()
+            hmmitems = []
             for word in words:
-                self
                 for item in self.word_state(word):
-                    self.model.add_item(item)
+                    hmmitems.append(item)    
+            self.model.add_items(hmmitems)
             return True
     
     def word_state(self , word):
@@ -204,14 +204,15 @@ class TrainSeg(object):
             yield HmmItem(word, 'b')
             yield HmmItem(word , 'e')
         elif len(word) >=3:
-            yield HmmItem(word , 'b')
-            for w in word[1:-1]:
-                yield HmmItem(word , 'm')
-            yield HmmItem(word , 'e')
+            yield HmmItem(word[0] , 'b')
+            for _word in word[1:-1]:
+                yield HmmItem(_word , 'm')
+            yield HmmItem(word[-1] , 'e')
 
 
 if __name__ == '__main__':
     
     t = TrainSeg()
-    t.add_line('我 爱 中国！')
+    t.add_line('我 爱 中国 ！')
     t.model.translate()
+    
