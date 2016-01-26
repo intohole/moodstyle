@@ -4,6 +4,7 @@
 
 
 import collections 
+import testDataSet
 
 class Dictionary(dict):
 
@@ -42,9 +43,6 @@ class Dictionary(dict):
         return vector
 
 
-class ListMap(list):
-
-    pass
 
 if __name__ == "__main__":
     d = Dictionary(words = ["a" , "b" ,"c"])
