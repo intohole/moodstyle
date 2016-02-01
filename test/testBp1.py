@@ -11,7 +11,7 @@ class Neroun(object):
         self.weights = self.init_weights(weight_len)                
         self.delta = delta  
         self.weight_len = weight_len
-        self.weight_range = range(weight_len)
+        self.weight_range = xrange(weight_len)
         self.learn_rate = learn_rate 
 
     def init_weights(self , weight_len  , weight_max = 0.5 , weight_min = -0.5):

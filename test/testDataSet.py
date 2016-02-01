@@ -1,6 +1,8 @@
 #coding=utf-8
 
 
+__ALL__ = ["DList" , "DenseData" , "SparseData" , "DataSet"] 
+
 class DList(list):
 
     def items(self):
@@ -82,9 +84,19 @@ class SparseData(dict):
         return self.data_len 
 
 class DataSet(DList):
-
+    """实现稀疏/非稀疏矩阵保存结构
+    """
 
     def __init__(self ,data_len, dense_data , *argv , **kw):
+        """初始化矩阵
+            params:
+                data_len                矩阵维数
+                dense_data              是否为稀疏矩阵
+            return 
+                None
+            raise 
+                None 
+        """
         super(DataSet , self).__init__(*argv , **kw)
         self._type = dense_data
         self._data_len = data_len  
@@ -92,6 +104,14 @@ class DataSet(DList):
         self._range = xrange(self._data_len)
 
     def append(self , data):
+        """增加数据
+            params:
+                data                需要增加的数据;类型：tuple,list,dict
+            return
+                True
+            raise:
+                data                类型不符合需求，抛出TypeError
+        """
         if isinstance(data , (list , tuple , dict)) :
             super(DataSet , self).append(self._data_class(data ,-1 , self._data_len ))
             return True
@@ -99,6 +119,8 @@ class DataSet(DList):
             raise TypeError
          
     def extend(self , data):
+        """增加同类型数据
+        """
         if isinstance(data , DataSet):
             if data._data_len == self._data_len and data._type == self._type:
                 super(DataSet , self).extend(data)
@@ -106,8 +128,14 @@ class DataSet(DList):
                 raise ValueError
             return 
         raise TypeError
-   
     
+
+    def shape(self):
+        return len(self) , self._data_len
+   
+    def data_range(self):
+        return self._range
+
 if __name__ == "__main__":
     d1 = DataSet(10 , False )
     d1.append({1 : "1" , 2:"3"})
