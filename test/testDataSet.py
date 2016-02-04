@@ -25,7 +25,7 @@ class DList(list):
         elif data and isinstance(data , (list , tuple)):
             for index , value in enumerate(data):
                 if index > len(self):
-                self[index] = value
+                    self[index] = value
                 
     def keys(self):
         return xrange(self._data_len)
@@ -37,16 +37,16 @@ class DList(list):
 
 class DeseData(DList):
 
-    def __init__(self , data , data_range  ,  default_value  ,  data_len  , *argv , **kw):
-        if isinstance(data , (list , tuple)) and len(data) == data_len:
+    def __init__(self , data  ,  default_value  ,  data_len  , *argv , **kw):
+        if data is None:
+            for i in xrange(data_len):
+                self.append(default_value)
+        elif isinstance(data , (list , tuple)) and len(data) == data_len:
             self.extend(data)
         elif isinstance(data , dict):
             for i in xrange(data_len):
-                self.append(default_value)
-            for i , value in data:
-                self[i] = value 
+                self.append(data.get( i , default_value))
         self._data_len = data_len 
-        self._data_range = data_range
 
     def __len__(self):
         return self._data_len
@@ -63,13 +63,11 @@ class SparseData(dict):
         super(SparseData , self).__init__(*argv , **kw)
         self._default = default_value
         self.data_len = data_len 
-        self.update(data)    
+        if data is not None:
+            self.update(data)    
          
     def __getitem__(self , index ):
-        if index in self:
-            return self[index]
-        else:
-            return self._default
+        return self[index] if index in self else self._default
 
     def __setitem__(self , index , value):
         if index:
@@ -100,10 +98,10 @@ class DataSet(DList):
         super(DataSet , self).__init__(*argv , **kw)
         self._type = dense_data
         self._data_len = data_len  
-        self._data_class = DeseData if dense_data else SparseData 
+        self._data_class = DeseData if dense_data is False else SparseData 
         self._range = xrange(self._data_len)
 
-    def append(self , data):
+    def append(self , data = None):
         """增加数据
             params:
                 data                需要增加的数据;类型：tuple,list,dict
@@ -112,7 +110,7 @@ class DataSet(DList):
             raise:
                 data                类型不符合需求，抛出TypeError
         """
-        if isinstance(data , (list , tuple , dict)) :
+        if data is None or isinstance(data , (list , tuple , dict)) :
             super(DataSet , self).append(self._data_class(data ,-1 , self._data_len ))
             return True
         else:
