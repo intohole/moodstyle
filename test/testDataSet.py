@@ -67,7 +67,7 @@ class SparseData(dict):
             self.update(data)    
          
     def __getitem__(self , index ):
-        return self[index] if index in self else self._default
+        return super(SparseData , self).__getitem__(index) if index in self else self._default
 
     def __setitem__(self , index , value):
         if index:

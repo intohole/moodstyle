@@ -2,6 +2,7 @@
 
 
 from testDataSet import DataSet
+import copy
 
 class Graph(object):
 
@@ -28,14 +29,30 @@ class Graph(object):
     def keys(self):
         return self._keys
 
-    def in(self , point):
+    def ins(self , point):
         if point and isinstance(point , (int , long)):
             if point >=  0 and point < self._len:
-                return self.data[point].keys()
-    def out(self , point):
+                for index in self.data.keys():
+                    if self.data[index][point] > 0:
+                        yield index 
+                    
+
+    def outs(self , point):
         if point and isinstance(point , (int , long)):
             if point >=  0 and point < self._len:
-                return for i in self.keys():
+                for index in self.data[point].keys():
+                    if self.data[point][index] > 0:
+                        yield index 
+    def outs_count(self , point):
+        count = 0
+        for _ in self.outs(point):
+            count = count + 1
+        return count
+
+    def update(self , weights):
+        if weights:
+            for i in self.keys():
+                self.weights[i] =  weights[i]
 
 class PageRank(object):
 
@@ -44,11 +61,25 @@ class PageRank(object):
         pass
 
 
-    def rank(self , graph ):
-        for i in keys 
+    def rank(self , graph ,iter_count = 1000, d = 0.85 , min_error = 0.001):
+        for _ in xrange(iter_count):
+            weights = copy.copy(graph.weights)
+            for i in graph.keys():
+                weights[i] =(1-d) + d * sum([ weights[point_in]/graph.outs_count(point_in) for point_in in graph.ins(i)]) 
+            error = self.calc_error(weights ,graph ) 
+            if error < min_error:
+                break
+            graph.update(weights)
+        return copy.copy(graph.weights)
+    
+    def calc_error(self , weights , graph):
+        return max(abs(weights[i] - graph.weights[i])  for i in graph.keys())
 
 if __name__ == "__main__":
     graph = Graph(10)
     graph.add_edge(1 , 9)
-
+    graph.add_edge(3 , 4)
+    graph.add_edge(6 , 8)
+    pagerank = PageRank()
+    print pagerank.rank(graph )
 
