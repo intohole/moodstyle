@@ -93,18 +93,20 @@ class Document(object):
         return "doc:" + str(self.get_type_set()) + "\t\twords:%s" + str(self.get_word_set()) + "\n"  
 
 class ITextFeatureScore(object):
-
-    '''
-    doc_word_count , 特定文档中出现该词的文档数目
-    doc_count , 特定类别的文档数目
-    word_count , 特定存在文档总数目
-    doc_sum , 文档总数目
-    功能： 计算 每个词的分值
-    返回: double
-
-    '''
+    
 
     def feature_socre(self, doc_word_count, doc_count, word_count, doc_sum):
+        """计算文档每个词的属性分值 
+            params:
+                doc_word_count                  特定文档中出现该词的文档数目               
+                doc_count                       特定类别的文档数目
+                word_count                      定存在文档总数目
+                doc_sum                         文档总数目
+            return 
+                score                           double  , 计算属性分值
+            raise:
+                None 
+        """
         raise NotImplementedError
 
 

@@ -136,6 +136,5 @@ class Bp(object):
 
 if __name__ == "__main__":
 
-    bp = Bp(3 , 4 , 4)
-    print bp.predict([2. , 3. ,1.])
-    print bp.train([2. , 3. , 1.] , [1. , 1. ,1.,1.])
+    bp = Bp(2 , 2 , 1)
+    print bp.train([ 1 , 0 ] , [1. , 1. ,1.,1.])
