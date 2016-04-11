@@ -1,7 +1,7 @@
 #coding=utf-8
 
 
-from testDataSet import DataSet
+from DataSet import DataSet
 import copy
 
 class Graph(object):

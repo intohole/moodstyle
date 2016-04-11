@@ -2,9 +2,9 @@
 #!/usr/bin/env python
 
 from random import randint
+from random import sample
 
-
-class Canopy:
+class Canopy(object):
 
     '''
     一个类
@@ -19,7 +19,7 @@ class Canopy:
             str(self.centre), ','.join([str(data) for data in self.datas]))
 
 
-class CanopyCluster:
+class CanopyCluster(object):
 
     '''
     canopy 是一个粗聚类算法
@@ -44,30 +44,36 @@ class CanopyCluster:
     def __init__(self, t1, t2):
         if t1 <= t2:
             raise TypeError, 't1 must be bigger than t2'
-        self.__t1 = t1
-        self.__t2 = t2
+        self.t1 = t1
+        self.t2 = t2
 
     def cluster(self, datas):
+        '''
+        function:
+            datas 数据数组
+        return 
+
+        '''
         canopys = []
         while len(datas) > 0:
-            __index = randint(0, len(datas) - 1)
-            __canopy = Canopy(datas[__index])
-            del datas[__index]
-            __i = 0
+            rand_center = randint(0, len(datas) - 1)
+            canopy = Canopy(datas[rand_center])
+            del datas[rand_center] 
+            index = 0
             # 这里有个操作　，　因为for i in range(9) 这样是在一个ｌｉｓｔ，删除元素无用
-            while __i < len(datas):
-                dis = self.distance(__canopy.centre, datas[__i])
-                if dis < self.__t1:
-                    __canopy.datas.append(datas[__i])
-                if dis < self.__t2:
-                    del datas[__i]
-                    __i = __i - 1
-                __i = __i + 1
-            canopys.append(__canopy)
+            while index < len(datas):
+                distance = self.distance(canopy.centre, datas[index])
+                if distance < self.t1:
+                    canopy.datas.append(datas[index])
+                if distance < self.t2:
+                    del datas[index]
+                    index = index - 1
+                index = index + 1
+            canopys.append(canopy)
         return canopys
 
     def distance(self, data1, data2):
-        pass
+        raise NotImplementedError
 
 
 class SimpleCanopyCluster(CanopyCluster):
