@@ -30,12 +30,17 @@ class DList(list):
     def keys(self):
         return xrange(self._data_len)
 
+    def order_key(self):
+        return xrange(self.data_len)
+
     def values(self):
         return self
 
 
 
 class DeseData(DList):
+    """多维数组实现
+    """
 
     def __init__(self , data  ,  default_value  ,  data_len  , *argv , **kw):
         if data is None:
@@ -46,6 +51,8 @@ class DeseData(DList):
         elif isinstance(data , dict):
             for i in xrange(data_len):
                 self.append(data.get( i , default_value))
+        else:
+            raise TypeError("data type must be in [list , tuple , dict]") 
         self._data_len = data_len 
 
     def __len__(self):
@@ -58,7 +65,9 @@ class DeseData(DList):
             raise IndexError
     
 class SparseData(dict):
-
+    """稀疏矩阵实现，利用dict实现；在存储空间上不占优势；；一般用于文本向量
+        计算中使用
+    """
     def __init__(self ,data , default_value , data_len , *argv , **kw):
         super(SparseData , self).__init__(*argv , **kw)
         self._default = default_value
@@ -80,6 +89,9 @@ class SparseData(dict):
 
     def __len__(self):
         return self.data_len 
+
+    def order_key(self):
+        return sorted(self.keys() , reverse = False)
 
 class DataSet(DList):
     """实现稀疏/非稀疏矩阵保存结构
@@ -133,13 +145,3 @@ class DataSet(DList):
    
     def data_range(self):
         return self._range
-
-if __name__ == "__main__":
-    d1 = DataSet(10 , False )
-    d1.append({1 : "1" , 2:"3"})
-    for d in d1:
-        for i , value in d.items():
-            print  i ,value
-    d2 = DataSet(10 , False)
-    d2.extend(d1)
-    print d2
