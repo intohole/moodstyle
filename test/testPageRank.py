@@ -2,7 +2,9 @@
 
 
 from testDataSet import DataSet
+from collections import Counter 
 import copy
+
 
 class Graph(object):
 
@@ -14,6 +16,7 @@ class Graph(object):
             self.data.append()
         self._keys = xrange(point_len)
         self._len = point_len
+        self.outs_counter = Counter() 
     
     def __len__(self):
         return self._len
@@ -25,11 +28,14 @@ class Graph(object):
             return 
         """
         self.data[point_a][point_b] = 1
+        self.outs_counter[point_a] += 1
    
     def keys(self):
         return self._keys
 
     def ins(self , point):
+        """入链个数
+        """
         if point and isinstance(point , (int , long)):
             if point >=  0 and point < self._len:
                 for index in self.data.keys():
@@ -44,10 +50,7 @@ class Graph(object):
                     if self.data[point][index] > 0:
                         yield index 
     def outs_count(self , point):
-        count = 0
-        for _ in self.outs(point):
-            count = count + 1
-        return count
+        return self.outs_counter[point]
 
     def update(self , weights):
         if weights:
