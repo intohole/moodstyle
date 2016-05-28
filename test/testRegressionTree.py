@@ -37,6 +37,8 @@ class RegressionTree(object):
             raise:None 
         """
         c1 , c2 = self.get_target_avg(datasets , attr , split_value)
+        if c1 is None or c2 is None:
+            return None
         error = None 
         for i in xrange(len(datasets)):
             if datasets[i][attr] is None:
@@ -59,20 +61,22 @@ class RegressionTree(object):
             return:数据集中大于split_value值属性的训练target目标平均值c1 , 数据集attr属性中小于等于spliit_value属性的训练target目标平均值c2
             raise:None
         """
-        c1 , c2 = None , None
+        c1 , c2 = 0., 0.
         c1_count , c2_count = 0, 0
         for i in xrange(len(datasets)):
             if datasets[i][attr] is None:
                 continue
-            if c1 is None or c2 is None:
-                c1, c2 = 0., 0.
             if datasets[i][attr] > split_value:
                 c1 += targets[i]
                 c1_count++
             else:
                 c2 += targets[i]
                 c2_count++
-        return c1 / c1_count , c2/ c2_count
+        return c1 / c1_count , c2/ c2_count if c1 == 0 or c2 == 0 else None,None
 
+    def _get_split_point(self , datasets ,labels, attr):
+        split_value
+        for i in xrange(len(datasets)):
+            
     def get_best_split_attr_value(self , datasets , targets):
-        
+          
