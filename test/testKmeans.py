@@ -133,10 +133,3 @@ class EuclideanKmeans(Kmeans, Euclidean):
     pass
 
 
-if __name__ == '__main__':
-    k = DKmeans()
-    with open('')
-    datas = [[randint(1, 20), randint(1, 20), randint(
-        1, 20), randint(1, 20), randint(1, 20)] for _ in range(100)]
-    labels = k.cluster(datas, 5, 200, diff=0.00001)
-    print labels

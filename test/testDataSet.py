@@ -1,12 +1,12 @@
 #coding=utf-8
 
 
-__ALL__ = ["DList" , "DenseData" , "SparseData" , "DataSet"] 
+__ALL__ = ["DList" , "DenseData" , "SparseData" , "DataSet"]
 
 class DList(list):
 
     def items(self):
-        return enumerate(self) 
+        return enumerate(self)
 
     def has_key(self , value):
         if value and isinstance(value , (int , long)):
@@ -14,19 +14,20 @@ class DList(list):
                 return True
             return False
         raise TypeError
-    
+
+
     def update(self , data):
         if data and hasattr(data , "items"):
             for index , value in data.items():
                 if index > len(self):
                     self.append(value)
                 else:
-                    self[index] = value  
+                    self[index] = value
         elif data and isinstance(data , (list , tuple)):
             for index , value in enumerate(data):
                 if index > len(self):
                     self[index] = value
-                
+
     def keys(self):
         return xrange(self._data_len)
 
@@ -52,18 +53,18 @@ class DeseData(DList):
             for i in xrange(data_len):
                 self.append(data.get( i , default_value))
         else:
-            raise TypeError("data type must be in [list , tuple , dict]") 
-        self._data_len = data_len 
+            raise TypeError("data type must be in [list , tuple , dict]")
+        self._data_len = data_len
 
     def __len__(self):
         return self._data_len
-    
+
     def __setitem__(self , index , value ):
         if index  and index < self._data_len:
             super(DeseData , self).__setitem__(index , value)
         else:
             raise IndexError
-    
+
 class SparseData(dict):
     """稀疏矩阵实现，利用dict实现；在存储空间上不占优势；；一般用于文本向量
         计算中使用
@@ -71,15 +72,15 @@ class SparseData(dict):
     def __init__(self ,data , default_value , data_len , *argv , **kw):
         super(SparseData , self).__init__(*argv , **kw)
         self._default = default_value
-        self.data_len = data_len 
+        self.data_len = data_len
         if data is not None:
-            self.update(data)    
-         
+            self.update(data)
+
     def __getitem__(self , index ):
         return super(SparseData , self).__getitem__(index) if index in self else self._default
 
     def __setitem__(self , index , value):
-        if index:
+        if index is not None:
             if index < self.data_len:
                 super(SparseData , self).__setitem__(index , value )
             else:
@@ -88,7 +89,7 @@ class SparseData(dict):
             raise ValueError
 
     def __len__(self):
-        return self.data_len 
+        return self.data_len
 
     def order_key(self):
         return sorted(self.keys() , reverse = False)
@@ -102,15 +103,15 @@ class DataSet(DList):
             params:
                 data_len                矩阵维数
                 dense_data              是否为稀疏矩阵
-            return 
+            return
                 None
-            raise 
-                None 
+            raise
+                None
         """
         super(DataSet , self).__init__(*argv , **kw)
         self._type = dense_data
-        self._data_len = data_len  
-        self._data_class = DeseData if dense_data is False else SparseData 
+        self._data_len = data_len
+        self._data_class = DeseData if dense_data is False else SparseData
         self._range = xrange(self._data_len)
 
     def append(self , data = None):
@@ -127,7 +128,7 @@ class DataSet(DList):
             return True
         else:
             raise TypeError
-         
+
     def extend(self , data):
         """增加同类型数据
         """
@@ -136,12 +137,12 @@ class DataSet(DList):
                 super(DataSet , self).extend(data)
             else:
                 raise ValueError
-            return 
+            return
         raise TypeError
-    
+
 
     def shape(self):
         return len(self) , self._data_len
-   
+
     def data_range(self):
         return self._range

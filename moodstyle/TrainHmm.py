@@ -72,4 +72,4 @@ class TrainHmm(object):
                 # p(hide_state | obs_state)
                 # p(A|B) = P(AB) / P(B) = Count(AB) / count(Br)
                 self.emission_probability[state][obs_state] = (
-                    self.emission_probability[state][obs_state] + 1) / self.states_count[state])
+                    self.emission_probability[state][obs_state] + 1) / self.states_count[state]

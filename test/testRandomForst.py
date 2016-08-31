@@ -6,6 +6,5 @@
 class RF(object):
 
 
+    pass
 
-
-    def __init__(self , tree_len , )
