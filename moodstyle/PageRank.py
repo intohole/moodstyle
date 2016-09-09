@@ -2,8 +2,10 @@
 
 
 from DataSet import DataSet
-from collections import Counter 
+from collections import Counter
+from collections import defaultdict
 import copy
+import sys
 
 
 class Graph(object):
@@ -16,39 +18,34 @@ class Graph(object):
             self.data.append()
         self._keys = xrange(point_len)
         self._len = point_len
-        self.outs_counter = Counter() 
-    
+        self.outs_counter = Counter()
+        self.point_ins = defaultdict(set)
+
     def __len__(self):
         return self._len
 
     def add_edge(self , point_a , point_b):
-        """添加point_a 指向 point_b
-            param: point_a              图点a -> b 
+        """add point a to b edge
+        param: point_a:point              图点a -> b
             param: point_b              图被指向点
-            return 
+            return:None
         """
         self.data[point_a][point_b] = 1
         self.outs_counter[point_a] += 1
-   
+        self.point_ins[point_b].add(point_a)
+
     def keys(self):
         return self._keys
 
     def ins(self , point):
-        """入链个数
-        """
-        if point and isinstance(point , (int , long)):
-            if point >=  0 and point < self._len:
-                for index in self.data.keys():
-                    if self.data[index][point] > 0:
-                        yield index 
-                    
+        return self.point_ins[point]
 
     def outs(self , point):
         if point and isinstance(point , (int , long)):
             if point >=  0 and point < self._len:
                 for index in self.data[point].keys():
                     if self.data[point][index] > 0:
-                        yield index 
+                        yield index
     def outs_count(self , point):
         return self.outs_counter[point]
 
@@ -64,17 +61,18 @@ class PageRank(object):
         pass
 
 
-    def rank(self , graph ,iter_count = 1000, d = 0.85 , min_error = 0.001):
-        for _ in xrange(iter_count):
+    def rank(self , graph ,iter_count = 1000, d = 0.85 , min_error = 0.01):
+        for _iter in xrange(iter_count):
             weights = copy.copy(graph.weights)
             for i in graph.keys():
-                weights[i] =(1-d) + d * sum([ weights[point_in]/graph.outs_count(point_in) for point_in in graph.ins(i)]) 
-            error = self.calc_error(weights ,graph ) 
+                weights[i] =(1-d) + d * sum([ weights[point_in]/graph.outs_count(point_in) for point_in in graph.ins(i)])
+            error = self.calc_error(weights ,graph )
+            sys.stderr.write("iter : %s error:%s\n" % (_iter , error))
             if error < min_error:
                 break
             graph.update(weights)
         return copy.copy(graph.weights)
-    
+
     def calc_error(self , weights , graph):
         return max(abs(weights[i] - graph.weights[i])  for i in graph.keys())
 

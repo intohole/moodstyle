@@ -12,3 +12,4 @@ moodstyle/cool
 build/
 dist/
 moodstyle.egg-info/
+test/.ropeproject/
