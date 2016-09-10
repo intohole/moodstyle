@@ -49,16 +49,51 @@ class Graph(object):
     def outs_count(self , point):
         return self.outs_counter[point]
 
-    def update(self , weights):
+    def update(self,weights):
         if weights:
+            error = 0.
             for i in self.keys():
-                self.weights[i] =  weights[i]
+                error = max( error , abs(weights[i] - self.weights[i]))
+                self.weights[i] = weights[i]
+            return error
+
+
+class GraphV2(object):
+
+
+
+    def __init__(self,point_len):
+        self.weights = [1.] * point_len
+        self._keys = xrange(point_len)
+        self._len = point_len
+        self.outs_counter = Counter()
+        self.point_ins = defaultdict(set)
+
+    def __len__(self):
+        return self._len
+
+    def add_edge(self ,point_a , point_b):
+        self.outs_counter[point_a] +=1
+        self.point_ins[point_b].add(point_a)
+
+    def keys(self):
+        return self._keys
+
+    def outs_count(self,point):
+        return self.outs_counter[point]
+
+    def update(self,weights):
+        if weights:
+            error = 0.
+            for i in self.keys():
+                error = max( error , abs(weights[i] - self.weights[i]))
+                self.weights[i] = weights[i]
+            return error
+
+    def ins(self,point):
+        return self.point_ins[point]
 
 class PageRank(object):
-
-
-    def __init__(self):
-        pass
 
 
     def rank(self , graph ,iter_count = 1000, d = 0.85 , min_error = 0.01):
@@ -66,18 +101,18 @@ class PageRank(object):
             weights = copy.copy(graph.weights)
             for i in graph.keys():
                 weights[i] =(1-d) + d * sum([ weights[point_in]/graph.outs_count(point_in) for point_in in graph.ins(i)])
-            error = self.calc_error(weights ,graph )
+
+            error = graph.update(weights)
             sys.stderr.write("iter : %s error:%s\n" % (_iter , error))
             if error < min_error:
                 break
-            graph.update(weights)
         return copy.copy(graph.weights)
 
     def calc_error(self , weights , graph):
         return max(abs(weights[i] - graph.weights[i])  for i in graph.keys())
 
 if __name__ == "__main__":
-    graph = Graph(10)
+    graph = GraphV2(10)
     graph.add_edge(1 , 9)
     graph.add_edge(3 , 4)
     graph.add_edge(6 , 8)
