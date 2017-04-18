@@ -14,7 +14,7 @@
 
 import Interface
 import DataSet
-class Ann(Interface.Classify):
+class Ann(testInterface.Classify):
 
 
 
@@ -55,8 +55,8 @@ class Ann(Interface.Classify):
     def train(self , datas , labels , *argv , **kw):
         if data is None:
             raise TypeError("datas is must be valuealbe")
-        if isinstance(data , (list, tuple, DataSet.DataSet)) is False:
-            raise TypeError("datas type in [list , tuple , DataSet.DataSet]")
+        if isinstance(data , (list, tuple, testDataSet.DataSet)) is False:
+            raise TypeError("datas type in [list , tuple , testDataSet.DataSet]")
         if len(datas) != len(labels):
             raise Exception("datas len must be equal labels")
         for i in xrange(datas):
