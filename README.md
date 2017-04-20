@@ -1,84 +1,344 @@
-Title: 关于moodstyle 使用方法  
-Slug: six god  
-Date: 2013-12-16 19:39:38  
-Tags: 情感分析   
-Category:  算法 python  
-Author:  泽  
-Lang:  zh  
-Summary: 一个辅助工具集  
 
-moodstyle工具集介绍  
-============
-
-
-## test目录才是真实目录 ##
-
-PTextFeatureExtract  
-----------------------------------
-:::python
-
-                    from textfeature.PTextFeatureExtract import *  
-                    text_feature_extract = IM() #基于互信息 可选择种类为：CHI () DF WLLR  
-                    contents = []  
-                    with open('/home/xxxx/fenlei/all.txt') as f:  
-                    contents = [line.strip() for line in f.readlines()]  
-                    for doc_type, word_list in s.extract_feature_from_contents(100, contents , 2).items():  
-                        print doc_type  
-                        for i in word_list:   
-                            print i  
-用于已经分好类别的数据，进行提取特征词  
-
-clusterutils/kmeans.py  
----------------------------
-基于kmeans分类算法实现   
-:::python
-
-              from clusterutils.kmeans import KMeans
-              k = KMeans() #但是要继承 def distance(self,data1,data2)： 计算分类距离   
-              print k.k_means(4, [(1,4),(5,2) ,(100,16),(8,9),(10,101),(150,1555),(177,120),(14,4),(5,99)])  
-
-
-clusterutils/levenshtein.py
--------------------------------------------------
-字符串编辑距离 及字符串相似度  
-:::python
-
-             from clusterutils.Levenshtein import *
-             str_similarity('asds', 'acbccc')  # 0.17  
-
-clusterutils/similar.py  
-------------------------------------------
-两个（句子，段落）之间相似度    
-:::python
-
-             from clusterutils.similar import *
-             print similar("我 不 爱 他妈 哈 哈 哈", "我 爱 天安门 ming 哈 哈 哈") # 0.846153846154 两个句子向量相似度  
+moodstyle机器学习脚本库
+=======================
 
 
 
-clusterutils/HMM.py
--------------------------------------------------
-隐士马尔夫实现 hmm 维特比实现
-:::python
 
-             states = ('Healthy', 'Fever') 
-
-            observations = ('normal', 'cold', 'dizzy')
-
-            start_probability = {'Healthy': 0.6, 'Fever': 0.4}
-            transition_probability = {
-                'Healthy': {'Healthy': 0.7, 'Fever': 0.3},
-                'Fever': {'Healthy': 0.4, 'Fever': 0.6},
-            }
-            emission_probability = {
-                'Healthy': {'normal': 0.5, 'cold': 0.4, 'dizzy': 0.1},
-                'Fever': {'normal': 0.1, 'cold': 0.3, 'dizzy': 0.6},
-            }
-            print viterbi(observations , states , start_probability , transition_probability , emission_probability)
-              
-
-
-
- 
-
-   
++ AdBoost.py
+    + [BoostClassifier(object)](b2/AdBoost.py#L6)
+    + [BoostData(object)](b2/AdBoost.py#L22)
+    + [AdBoost(object)](b2/AdBoost.py#L32)
+        + [train(self, datas)](b2/AdBoost.py#L39)
+        + [classify(self, data)](b2/AdBoost.py#L59)
++ AdTree.py
+    + [Classifier(object)](b2/AdTree.py#L7)
+        + [clear(self)](b2/AdTree.py#L18)
+        + [update_fit_value(self, data, value)](b2/AdTree.py#L22)
+        + [updates_fit_values(self, datas, values)](b2/AdTree.py#L27)
+        + [sync(self)](b2/AdTree.py#L31)
+        + [classify(self, data)](b2/AdTree.py#L38)
+    + [AdTree(object)](b2/AdTree.py#L51)
+        + [train(self, datas, weights, classifiers, diff=0.2)](b2/AdTree.py#L57)
+        + [find_min_loss(self, datas, residuals, classifiers)](b2/AdTree.py#L85)
+        + [update_residual(self, datas, residuals , classifier)](b2/AdTree.py#L106)
+        + [classify(self, data)](b2/AdTree.py#L116)
++ Ann.py
+    + [Ann(testInterface.Classify)](b2/Ann.py#L17)
+        + [classify(self , data , *argv , **kw )](b2/Ann.py#L39)
+        + [train(self , datas , labels , *argv , **kw)](b2/Ann.py#L55)
++ Array.py
+    + [PoolArray(objects)](b2/Array.py#L12)
+        + [create_rand_list(self)](b2/Array.py#L24)
+        + [next(self)](b2/Array.py#L37)
+    + [WaterSample(object)](b2/Array.py#L45)
+        + [get_rand_score(self )](b2/Array.py#L55)
+        + [next(self)](b2/Array.py#L58)
+    + [SampleArray(object)](b2/Array.py#L73)
++ BaseStrut.py
+    + [WeightArray(object)](b2/BaseStrut.py#L5)
+        + [get_distance_by_index(self  , row , line )](b2/BaseStrut.py#L32)
+        + [create_distance_map(self, datas, distance_fun)](b2/BaseStrut.py#L46)
+    + [Normalization(object)](b2/BaseStrut.py#L72)
+	    + [update(self , value)](b2/BaseStrut.py#L79)
+	    + [get_normalization(self ,value )](b2/BaseStrut.py#L83)
+    + [MinMax(Normalization)](b2/BaseStrut.py#L88)
+	    + [update(self , value)](b2/BaseStrut.py#L107)
+	    + [get_normalization(self , value )](b2/BaseStrut.py#L129)
+    + [ZScore(Normalization)](b2/BaseStrut.py#L148)
+	    + [update(self , values)](b2/BaseStrut.py#L159)
+	    + [get_normalization(self , value)](b2/BaseStrut.py#L168)
+    + [LogNormalization(Normalization)](b2/BaseStrut.py#L176)
+	    + [get_normalization(self , value )](b2/BaseStrut.py#L193)
+    + [Arccotx(Normalization)](b2/BaseStrut.py#L198)
+	    + [get_normalization(self , value )](b2/BaseStrut.py#L201)
++ Bayes.py
+    + [Bayes(object)](b2/Bayes.py#L7)
+        + [train(self, datas, attr_len, labels, dense=True)](b2/Bayes.py#L10)
+        + [get_prob(self , attr_index , value ,label )](b2/Bayes.py#L53)
+        + [predict(self, data)](b2/Bayes.py#L71)
+        + [predict_old(self, data)](b2/Bayes.py#L83)
++ Bp.py
+    + [Layer(object)](b2/Bp.py#L12)
+    + [RatioArray(object)](b2/Bp.py#L22)
+    + [Bp(object)](b2/Bp.py#L36)
+    + [rand(a, b)](b2/Bp.py#L54)
+    + [makeMatrix(I, J, fill=0.0)](b2/Bp.py#L58)
+    + [sigmoid(x)](b2/Bp.py#L65)
+    + [dsigmoid(y)](b2/Bp.py#L70)
+    + [NN](b2/Bp.py#L73)
+        + [update(self, inputs)](b2/Bp.py#L101)
+        + [backPropagate(self, targets, N, M)](b2/Bp.py#L126)
+        + [test(self, patterns)](b2/Bp.py#L166)
+        + [weights(self)](b2/Bp.py#L170)
+        + [train(self, patterns, iterations=1000, N=0.5, M=0.1)](b2/Bp.py#L179)
+    + [demo()](b2/Bp.py#L193)
++ Bp1.py
+    + [Neroun(object)](b2/Bp1.py#L7)
+        + [init_weights(self , weight_len  , weight_max = 0.5 , weight_min = -0.5)](b2/Bp1.py#L17)
+        + [predict(self , inputs)](b2/Bp1.py#L20)
+        + [simgod(self , value)](b2/Bp1.py#L23)
+        + [disgod(self , target)](b2/Bp1.py#L26)
+        + [update(self , target, predict)](b2/Bp1.py#L38)
+    + [Layer(object)](b2/Bp1.py#L44)
+        + [predict(self , inputs )](b2/Bp1.py#L64)
+        + [train_predict(self , inputs)](b2/Bp1.py#L67)
+        + [update(self , deltas)](b2/Bp1.py#L72)
+        + [get_delta(self ,errors)](b2/Bp1.py#L77)
+    + [OutPutLayer(Layer)](b2/Bp1.py#L80)
+        + [get_delta(self , errors )](b2/Bp1.py#L82)
+    + [HiddenLayer(Layer)](b2/Bp1.py#L85)
+        + [get_delta(self , errors )](b2/Bp1.py#L91)
+    + [Bp(object)](b2/Bp1.py#L98)
+        + [predict(self , inputs)](b2/Bp1.py#L110)
+        + [train(self , inputs ,targets )](b2/Bp1.py#L125)
++ Canopy.py
+    + [Canopy(object)](b2/Canopy.py#L7)
+    + [CanopyCluster(object)](b2/Canopy.py#L22)
+        + [cluster(self, datas)](b2/Canopy.py#L50)
+        + [distance(self, data1, data2)](b2/Canopy.py#L75)
+    + [SimpleCanopyCluster(CanopyCluster)](b2/Canopy.py#L79)
+        + [distance(self, data1, data2)](b2/Canopy.py#L81)
++ Cart.py
+    + [Node(object)](b2/Cart.py#L10)
+    + [CartTree(object)](b2/Cart.py#L22)
+        + [load_model(self, file_path)](b2/Cart.py#L28)
+        + [save(self, model_path)](b2/Cart.py#L37)
+        + [split_data_by_attr(self, datas, attrs, attr_name)](b2/Cart.py#L70)
+        + [train(self, datas, attrs, labels, threshold=0.01)](b2/Cart.py#L87)
+        + [get_split_attr(self, attrs, attr)](b2/Cart.py#L92)
+        + [get_split_value(self, datas, split_index)](b2/Cart.py#L99)
+        + [calc_gini(self, datas, labels, split_index, split_value)](b2/Cart.py#L107)
+        + [get_best_feature(self, datas, labels, attrs)](b2/Cart.py#L137)
+        + [classify(self, data)](b2/Cart.py#L180)
++ DDistance.py
+    + [DDdistance(object)](b2/DDistance.py#L6)
+        + [distance(self, data1, data2)](b2/DDistance.py#L8)
+    + [Manhattan(DDdistance)](b2/DDistance.py#L12)
+        + [distance(self, data1, data2)](b2/DDistance.py#L18)
+    + [DefaultDistance(DDdistance)](b2/DDistance.py#L24)
+        + [distance(self, data1, data2)](b2/DDistance.py#L26)
+    + [Chebyshev(DDdistance)](b2/DDistance.py#L35)
+        + [distance(self, data1, data2)](b2/DDistance.py#L41)
+    + [Cosine(DDdistance)](b2/DDistance.py#L47)
+        + [distance(self, data1, data2)](b2/DDistance.py#L53)
+    + [Hamming(DDdistance)](b2/DDistance.py#L63)
+        + [distance(self, data1, data2)](b2/DDistance.py#L69)
+    + [Euclidean(DDdistance)](b2/DDistance.py#L73)
+        + [distance(self, data1, data2)](b2/DDistance.py#L79)
++ DataSet.py
+    + [DList(list)](b2/DataSet.py#L6)
+        + [items(self)](b2/DataSet.py#L8)
+        + [has_key(self , value)](b2/DataSet.py#L11)
+        + [update(self , data)](b2/DataSet.py#L19)
+        + [keys(self)](b2/DataSet.py#L31)
+        + [order_key(self)](b2/DataSet.py#L34)
+        + [values(self)](b2/DataSet.py#L37)
+    + [DeseData(DList)](b2/DataSet.py#L42)
+    + [SparseData(dict)](b2/DataSet.py#L68)
+        + [order_key(self)](b2/DataSet.py#L94)
+    + [DataSet(DList)](b2/DataSet.py#L97)
+        + [append(self , data = None)](b2/DataSet.py#L117)
+        + [extend(self , data)](b2/DataSet.py#L132)
+        + [shape(self)](b2/DataSet.py#L144)
+        + [data_range(self)](b2/DataSet.py#L147)
++ DbScan.py
+    + [ClusterItem(object)](b2/DbScan.py#L5)
+    + [DbScan(object)](b2/DbScan.py#L15)
+        + [cluster(self , datas , radius , minPoint)](b2/DbScan.py#L18)
+        + [distance(self , data1  , data2 )](b2/DbScan.py#L66)
++ DecisionTree.py
+    + [Node(object)](b2/DecisionTree.py#L9)
+    + [DecisionTree(object)](b2/DecisionTree.py#L23)
+        + [train(self, datas, attrs, threshold=0.01, denseData=True, tree=None)](b2/DecisionTree.py#L29)
+        + [entropy(probs)](b2/DecisionTree.py#L65)
+        + [getSplitAttrs(self, attrs, attr)](b2/DecisionTree.py#L72)
+        + [getBestFeature(self, datas, attrs, denseData)](b2/DecisionTree.py#L79)
+        + [splitDataByAttr(self, datas, attrs, attr_name, attr_value, denseData=True)](b2/DecisionTree.py#L138)
+        + [classify(self, data)](b2/DecisionTree.py#L156)
++ DecisionTree1.py
+    + [Node(dict)](b2/DecisionTree1.py#L11)
+    + [DecisionTree(object)](b2/DecisionTree1.py#L15)
+        + [load_model(self, file_path)](b2/DecisionTree1.py#L21)
+        + [save(self, model_path)](b2/DecisionTree1.py#L30)
+        + [train(self, datas , labels , attrs, threshold=0.01, dense_data=True)](b2/DecisionTree1.py#L71)
+        + [entropy(probs)](b2/DecisionTree1.py#L76)
+        + [get_split_attr(self, attrs, attr)](b2/DecisionTree1.py#L83)
+        + [get_best_feature(self, datas, labels, attrs, dense_data)](b2/DecisionTree1.py#L90)
+        + [split_data_by_attr(self, datas , labels , attrs, attr_name, attr_value, dense_data=True)](b2/DecisionTree1.py#L93)
+        + [classify(self, data)](b2/DecisionTree1.py#L114)
+    + [ID3(DecisionTree)](b2/DecisionTree1.py#L137)
+        + [get_best_feature(self, datas , labels , attrs, dense_data)](b2/DecisionTree1.py#L139)
+    + [C45(ID3)](b2/DecisionTree1.py#L198)
+        + [get_best_feature(self, datas , labels, attrs, dense_data)](b2/DecisionTree1.py#L200)
++ DefaultValue.py
+    + [MissingValue(object)](b2/DefaultValue.py#L4)
+        + [get_value(self, feature)](b2/DefaultValue.py#L6)
+    + [ArvgMissingValue(object)](b2/DefaultValue.py#L10)
+        + [add(self, feature, value)](b2/DefaultValue.py#L15)
++ Dict.py
+    + [Dictionary(dict)](b2/Dict.py#L9)
+        + [open_dict(self , dict_path)](b2/Dict.py#L17)
+        + [to_vector(self , words)](b2/Dict.py#L29)
+        + [to_one_hot(self , words)](b2/Dict.py#L37)
++ Emm.py
+    + [Emm(object)](b2/Emm.py#L9)
++ FeatureExtract.py
+    + [Document(object)](b2/FeatureExtract.py#L6)
+        + [insert_document(self, doc_type, document= \[\])](b2/FeatureExtract.py#L16)
+        + [get_word_count(self, word)](b2/FeatureExtract.py#L37)
+        + [get_type_word_count(self, doc_type, word)](b2/FeatureExtract.py#L51)
+        + [get_doc_count(self, doc_type)](b2/FeatureExtract.py#L62)
+        + [get_word_set(self)](b2/FeatureExtract.py#L72)
+        + [get_type_set(self)](b2/FeatureExtract.py#L81)
+    + [ITextFeatureScore(object)](b2/FeatureExtract.py#L95)
+        + [feature_socre(self, doc_word_count, doc_count, word_count, doc_sum)](b2/FeatureExtract.py#L98)
+    + [CreateDocument(object)](b2/FeatureExtract.py#L116)
+        + [insert_document_list(self, doc_name, contents, ngram=1, word_split=' ')](b2/FeatureExtract.py#L121)
+        + [text_extract(self, words , ngram = 2,  word_split = None)](b2/FeatureExtract.py#L145)
+    + [TextFeature(object)](b2/FeatureExtract.py#L154)
+        + [extract_feature(self, doc, top_word=0.01)](b2/FeatureExtract.py#L160)
+        + [text_feature_score(self, doc_word_count, doc_count, word_count, doc_sum)](b2/FeatureExtract.py#L189)
+        + [filter(self, doc , doc_type , word)](b2/FeatureExtract.py#L200)
+    + [IM(TextFeature)](b2/FeatureExtract.py#L205)
+        + [text_feature_score(self, doc_word_count, doc_count, word_count, doc_sum)](b2/FeatureExtract.py#L212)
+    + [CHI(TextFeature)](b2/FeatureExtract.py#L216)
+        + [text_feature_score(self, doc_word_count, doc_count, word_count, doc_sum)](b2/FeatureExtract.py#L218)
+    + [DF(TextFeature)](b2/FeatureExtract.py#L226)
+        + [text_feature_score(self, doc_word_count, doc_count, word_count, doc_sum)](b2/FeatureExtract.py#L234)
+    + [WLLR(TextFeature)](b2/FeatureExtract.py#L241)
+        + [text_feature_score(self, doc_word_count, doc_count, word_count, doc_sum)](b2/FeatureExtract.py#L243)
+    + [IG(TextFeature)](b2/FeatureExtract.py#L254)
++ GRTree.py
++ HCluster.py
+    + [HierarchicalClustering(object)](b2/HCluster.py#L9)
+        + [cluster(self, datas, cluster_num,  threshold=0.03)](b2/HCluster.py#L14)
+        + [distance(self, data1, data2)](b2/HCluster.py#L45)
+        + [get_cluster_distance(self, cluster1, cluster2, distance_map)](b2/HCluster.py#L58)
+    + [ALHierarchicalClustering(HierarchicalClustering)](b2/HCluster.py#L72)
+        + [get_cluster_distance(self, cluster1, cluster2, distance_map)](b2/HCluster.py#L77)
+    + [SLHierarchicalClustering(HierarchicalClustering)](b2/HCluster.py#L81)
+        + [get_cluster_distance(self, cluster1, cluster2, distance_map)](b2/HCluster.py#L87)
+    + [CLHierarchicalClustering(HierarchicalClustering)](b2/HCluster.py#L92)
+        + [get_cluster_distance(self, cluster1, cluster2, distance_map)](b2/HCluster.py#L98)
++ Hmm.py
+    + [HmmItem(object)](b2/Hmm.py#L12)
+    + [HmmItems(list)](b2/Hmm.py#L24)
+        + [append(self, value)](b2/Hmm.py#L46)
+    + [HmmModel(object)](b2/Hmm.py#L58)
+        + [create_start_states(self, states, init_value=0.)](b2/Hmm.py#L70)
+        + [create_transition_probability(self, states, init_value=0.)](b2/Hmm.py#L76)
+        + [create_emission_probability(self, states)](b2/Hmm.py#L84)
+    + [Hmm(object)](b2/Hmm.py#L93)
+        + [load(self, model_path)](b2/Hmm.py#L102)
+        + [viterbi(self, obs)](b2/Hmm.py#L106)
+    + [TrainHmm(object)](b2/Hmm.py#L130)
+        + [save(self, model_path)](b2/Hmm.py#L135)
+        + [add_items(self, hmmitems)](b2/Hmm.py#L139)
+        + [translate(self)](b2/Hmm.py#L157)
+    + [TrainSeg(object)](b2/Hmm.py#L182)
+        + [add_line(self , line)](b2/Hmm.py#L188)
+        + [word_state(self , word)](b2/Hmm.py#L198)
++ Hmm1.py
+    + [HmmItem(object)](b2/Hmm1.py#L12)
+    + [HmmItems(list)](b2/Hmm1.py#L24)
+        + [append(self, value)](b2/Hmm1.py#L46)
+    + [HmmModel(object)](b2/Hmm1.py#L58)
+        + [create_start_states(self, states, init_value=0.)](b2/Hmm1.py#L70)
+        + [create_transition_probability(self, states, init_value=0.)](b2/Hmm1.py#L76)
+        + [create_emission_probability(self, states)](b2/Hmm1.py#L84)
+    + [Hmm(object)](b2/Hmm1.py#L93)
+        + [load(self, model_path)](b2/Hmm1.py#L102)
+        + [viterbi(self, obs)](b2/Hmm1.py#L106)
+    + [TrainHmm(object)](b2/Hmm1.py#L130)
+        + [save(self, model_path)](b2/Hmm1.py#L135)
+        + [add_items(self, hmmitems)](b2/Hmm1.py#L139)
+        + [translate(self)](b2/Hmm1.py#L157)
+    + [TrainSeg(object)](b2/Hmm1.py#L182)
+        + [add_line(self , line)](b2/Hmm1.py#L188)
+        + [word_state(self , word)](b2/Hmm1.py#L198)
++ Interface.py
+    + [Classify(object)](b2/Interface.py#L7)
+        + [classify(self , data , *argv , **kw)](b2/Interface.py#L12)
+    + [Regression(object)](b2/Interface.py#L16)
+        + [predict(self , data , *argv , **kw)](b2/Interface.py#L21)
++ KdTree.py
++ Kmeans.py
+但是必须要改写     + [distance(data1,data2) 数据距离函数](b2/Kmeans.py#L19)
+    + [Center(object)](b2/Kmeans.py#L24)
+    + [Kmeans(object)](b2/Kmeans.py#L52)
+        + [cluster(self, datas, k, iter_count=10000, diff=0.00001)](b2/Kmeans.py#L54)
+        + [rand_seed(self, datas, k)](b2/Kmeans.py#L89)
+        + [update_centers(self, datas, labels, centers)](b2/Kmeans.py#L94)
+    + [DKmeans(Kmeans)](b2/Kmeans.py#L107)
+        + [distance(self, data1, data2)](b2/Kmeans.py#L109)
+    + [ManhattanKmeans(Kmeans, Manhattan)](b2/Kmeans.py#L118)
+    + [HammingKmeans(Kmeans, Hamming)](b2/Kmeans.py#L123)
+    + [CosineKmeans(Kmeans, Cosine)](b2/Kmeans.py#L128)
+    + [EuclideanKmeans(Kmeans, Euclidean)](b2/Kmeans.py#L132)
++ KmeansPlusPlus.py
+    + [KmeansPlusPlus(Kmeans)](b2/KmeansPlusPlus.py#L10)
+        + [rand_seed(self, datas, k)](b2/KmeansPlusPlus.py#L12)
+    + [DKmeansPlusPlus(KmeansPlusPlus , DKmeans)](b2/KmeansPlusPlus.py#L40)
++ Knn.py
+    + [ClassItem(object)](b2/Knn.py#L4)
+    + [KdNode(object)](b2/Knn.py#L9)
+    + [KdTree(object)](b2/Knn.py#L19)
+        + [create_kd_tree(self, datas, k, feature_len, depth)](b2/Knn.py#L21)
+        + [get_split_index(self, datas, k, feature_len, depth)](b2/Knn.py#L30)
+    + [Knn(object)](b2/Knn.py#L48)
+        + [classify(self, data)](b2/Knn.py#L55)
++ LinerModel.py
+    + [LinerModel(object)](b2/LinerModel.py#L6)
+        + [train(self , datas , labels , item_len , learn_rate )](b2/LinerModel.py#L12)
+        + [update_weight(self , l , target , data , learn_rate)](b2/LinerModel.py#L21)
+        + [predict(self , data)](b2/LinerModel.py#L28)
++ Logistic.py
+    + [Logistic(object)](b2/Logistic.py#L6)
+        + [train(self, datas, labels, alpha=0.001)](b2/Logistic.py#L8)
+        + [classify(self, data)](b2/Logistic.py#L19)
+        + [sigmod(self, x)](b2/Logistic.py#L24)
++ MiniBatchKMeans.py
+    + [MiniBatchKmeans(Kmeans)](b2/MiniBatchKMeans.py#L17)
+        + [cluster(self, datas, k, iter_count=10000, diff=0.00001)](b2/MiniBatchKMeans.py#L19)
+        + [rand_seed(self, datas, k)](b2/MiniBatchKMeans.py#L60)
+        + [add(self, center, data, eta, data_len)](b2/MiniBatchKMeans.py#L63)
+    + [DMiniBatchKmeans(MiniBatchKmeans, DefaultDistance)](b2/MiniBatchKMeans.py#L69)
++ Ngram.py
+    + [ngram(string  , n = 2 )](b2/Ngram.py#L7)
++ PageRank.py
+    + [Graph(object)](b2/PageRank.py#L11)
+        + [add_edge(self , point_a , point_b)](b2/PageRank.py#L27)
+        + [keys(self)](b2/PageRank.py#L37)
+        + [ins(self , point)](b2/PageRank.py#L40)
+        + [outs(self , point)](b2/PageRank.py#L43)
+        + [outs_count(self , point)](b2/PageRank.py#L49)
+        + [update(self,weights)](b2/PageRank.py#L52)
+    + [GraphV2(object)](b2/PageRank.py#L61)
+        + [add_edge(self ,point_a , point_b)](b2/PageRank.py#L75)
+        + [keys(self)](b2/PageRank.py#L79)
+        + [outs_count(self,point)](b2/PageRank.py#L82)
+        + [update(self,weights)](b2/PageRank.py#L85)
+        + [ins(self,point)](b2/PageRank.py#L93)
+    + [PageRank(object)](b2/PageRank.py#L96)
+        + [rank(self , graph ,iter_count = 1000, d = 0.85 , min_error = 0.01)](b2/PageRank.py#L99)
+        + [calc_error(self , weights , graph)](b2/PageRank.py#L111)
++ RandomForst.py
+    + [RF(object)](b2/RandomForst.py#L6)
++ RegressionTree.py
+    + [TreeNode(object)](b2/RegressionTree.py#L5)
+    + [RegressionTree(object)](b2/RegressionTree.py#L15)
+        + [train(self , datasets , targets)](b2/RegressionTree.py#L26)
+        + [loss(self , datasets , labels , attr , split_value)](b2/RegressionTree.py#L30)
+        + [get_target_avg(self , datasets ,targets , attr , split_value)](b2/RegressionTree.py#L55)
++ TrainHmm.py
+    + [TrainHmm(object)](b2/TrainHmm.py#L7)
+        + [create_start_states(self, states, init_value=1.)](b2/TrainHmm.py#L20)
+        + [create_transition_probability(self, states, init_value=1.)](b2/TrainHmm.py#L26)
+        + [create_emission_probability(self, states)](b2/TrainHmm.py#L34)
+        + [trainHmm(self, datas)](b2/TrainHmm.py#L40)
+        + [translate(self)](b2/TrainHmm.py#L55)
++ __init__.py
++ config.py
+    + [set_prefs(prefs)](b2/config.py#L4)
+    + [project_opened(project)](b2/config.py#L94)
