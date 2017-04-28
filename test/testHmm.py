@@ -209,10 +209,12 @@ class TrainSeg(object):
                 yield HmmItem(_word , 'm')
             yield HmmItem(word[-1] , 'e')
 
+    def train():
+        self.model.translate()
 
 if __name__ == '__main__':
     
     t = TrainSeg()
     t.add_line('我 爱 中国 ！')
-    t.model.translate()
+    t.model.train()
     
