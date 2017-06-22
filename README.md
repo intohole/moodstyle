@@ -53,6 +53,12 @@ moodstyle机器学习脚本库
         + [__init__(self , objects , sample_    + = WaterSample)](moodstyle/Array.py#L76)
         + [__iter__(self)](moodstyle/Array.py#L84)
         + [__getitem__(self , index )](moodstyle/Array.py#L90)
++ Bandit.py
+    + [Greedy(object)](moodstyle/Bandit.py#L8)
+        + [__init__(self,e,N)](moodstyle/Bandit.py#L12)
+        + [_prop(self)](moodstyle/Bandit.py#L23)
+        + [getIndex(self)](moodstyle/Bandit.py#L32)
+        + [process(self,label)](moodstyle/Bandit.py#L45)
 + BaseStrut.py
     + [WeightArray(object)](moodstyle/BaseStrut.py#L5)
         + [__init__(self, datas, distance_fun)](moodstyle/BaseStrut.py#L8)
