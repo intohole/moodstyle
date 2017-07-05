@@ -59,6 +59,11 @@ moodstyle机器学习脚本库
         + [_prop(self)](moodstyle/Bandit.py#L23)
         + [getIndex(self)](moodstyle/Bandit.py#L32)
         + [process(self,label)](moodstyle/Bandit.py#L45)
+    + [UCB(object)](moodstyle/Bandit.py#L53)
+        + [__init__(self,N,max_value)](moodstyle/Bandit.py#L56)
+        + [_prop(self)](moodstyle/Bandit.py#L66)
+        + [getIndex(self)](moodstyle/Bandit.py#L72)
+        + [process(self,label)](moodstyle/Bandit.py#L80)
 + BaseStrut.py
     + [WeightArray(object)](moodstyle/BaseStrut.py#L5)
         + [__init__(self, datas, distance_fun)](moodstyle/BaseStrut.py#L8)
@@ -252,6 +257,16 @@ moodstyle机器学习脚本库
 + Emm.py
     + [Emm(object)](moodstyle/Emm.py#L9)
         + [__init__(self )](moodstyle/Emm.py#L13)
++ Feature.py
+    + [Binning(object)](moodstyle/Feature.py#L8)
+        + [__init__(self,k,box = None)](moodstyle/Feature.py#L12)
+        + [train(self,features)](moodstyle/Feature.py#L22)
+        + [predict(self,feature)](moodstyle/Feature.py#L26)
+        + [_sort(self,array)](moodstyle/Feature.py#L32)
+    + [EqualRate(Binning)](moodstyle/Feature.py#L37)
+        + [train(self,features)](moodstyle/Feature.py#L40)
+    + [EqualLength(Binning)](moodstyle/Feature.py#L45)
+        + [train(self,features)](moodstyle/Feature.py#L56)
 + FeatureExtract.py
     + [Document(object)](moodstyle/FeatureExtract.py#L6)
         + [__init__(self)](moodstyle/FeatureExtract.py#L11)
