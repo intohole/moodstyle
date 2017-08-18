@@ -417,6 +417,11 @@ moodstyle机器学习脚本库
     + [DMiniBatchKmeans(MiniBatchKmeans, DefaultDistance)](moodstyle/MiniBatchKMeans.py#L69)
 + Ngram.py
     + [ngram(content, splitor = " "  , n = 2 )](moodstyle/Ngram.py#L7)
++ OneHotCode.py
+    + [OneHotCode(object)](moodstyle/OneHotCode.py#L9)
+        + [__init__(self)](moodstyle/OneHotCode.py#L25)
+        + [train(self,data)](moodstyle/OneHotCode.py#L28)
+        + [predict(self,data)](moodstyle/OneHotCode.py#L33)
 + PageRank.py
     + [Graph(object)](moodstyle/PageRank.py#L11)
         + [__init__(self , point_len , dense = True )](moodstyle/PageRank.py#L14)
