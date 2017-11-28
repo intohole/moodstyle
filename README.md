@@ -2,9 +2,9 @@
 moodstyle机器学习脚本库
 =======================
 
-machine learning algorithm with pure python for pramgramer easily to learing;   
+machine learning algorithm with pure python which let pramgramer easily to learing;   
 
-please pull your code to this project,let's learn together;         
+please push your code to this project,let's learn together;         
 
 
 
