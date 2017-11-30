@@ -10,6 +10,9 @@ API
 -----------
 + [API文档/API Document](api.md)
 
+
+函数列表/(Function List)
+------
 + AdBoost.py
     + [BoostClassifier(object)](moodstyle/AdBoost.py#L6)
         + [__init__(self, classifier, weight=None)](moodstyle/AdBoost.py#L8)
