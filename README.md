@@ -6,7 +6,9 @@ machine learning algorithm with pure python which let pramgramer learn easily;
 
 please push your code to this project,let's learn together;         
 
-
+API
+-----------
++ [API文档/API Document](api.md)
 
 + AdBoost.py
     + [BoostClassifier(object)](moodstyle/AdBoost.py#L6)
