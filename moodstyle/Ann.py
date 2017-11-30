@@ -14,7 +14,11 @@
 
 import Interface
 import DataSet
-class Ann(testInterface.Classify):
+from b2 import exceptions2
+
+
+
+class Ann(Interface.Classify):
 
 
 
@@ -27,7 +31,7 @@ class Ann(testInterface.Classify):
         self.labels = labels
 
     def __train(self , data , label):
-        yt = self.classify(data)
+        yt = self.predict(data)
         if yt == label:
             return 
         for i in self.weight_len:
@@ -36,28 +40,26 @@ class Ann(testInterface.Classify):
 
 
 
-    def classify(self , data , *argv , **kw ):
-        """ann算法进行分类
-        params:data 数据源:class [list , tuple ,dict]
-        return:1,-1默认值:value 
+    def predict(self , data , *argv , **kw ):
+        """线性模型进行预测
+        param:data/预测数据:list/tuple/dict
+        return:predict value:int:model predict label 
         raise:None
         test:
-            >>> classify = Ann(2,0.1)
+            >>> model = Ann(2,0.1)
             >>> datas = [[[3, 3], 1], [[4, 3], 1], [[1, 1], -1], [[2, 2], -1] , [[7,3] , 1 ] , [ [-1 , -1] , -1 ] ] 
-            >>> for data in datas:
-            ...     classify.train(data[0] , data[-1])
-            >>> classify.classify(datas[-1][0]) == -1
+            >>> datas = [ data[0] for data in datas]
+            >>> labels = [ data[1] for data in datas]
+            >>> model.train(datas , labels)
+            >>> model.predict(datas[-1]) == -1
             True 
         """
         yt = sum( self.ratios[i] * data[i] for i in self.data_range ) + self.b  
         return min([ ( (yt -label) ** 2 , label)  for label in self.labels])[1]
 
     def train(self , datas , labels , *argv , **kw):
-        if data is None:
-            raise TypeError("datas is must be valuealbe")
-        if isinstance(data , (list, tuple, testDataSet.DataSet)) is False:
-            raise TypeError("datas type in [list , tuple , testDataSet.DataSet]")
-        if len(datas) != len(labels):
-            raise Exception("datas len must be equal labels")
-        for i in xrange(datas):
-            self.__train(datas[i] , labels[i])
+        exceptions2.judge_null(datas)
+        exceptions2.judge_null(labels)
+        exceptions2.judge_type(datas,(list,tuple,DataSet.DataSet))
+        for data,label in zip(datas,labels):
+            self.__train(data,label)
