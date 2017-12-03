@@ -35,15 +35,27 @@ API
             - warn: length of data1 is equal to the length of data2 
     - moodstyle.DDistance.Manhattan
         - 曼哈顿距离
-
     - moodstyle.DDistance.Chebyshev
         - 切比雪夫距离
-   
     - moodstyle.DDistance.Cosine
         - 余弦距离
-    
     - moodstyle.DDistance.Hamming
         - 海明距离
-    
     - moodstyle.DDistance.Eucliden
         - 欧式距离 
+
++ moodstyle.PageRank
+    - moodstyle.PageRank.GraphV2
+        - 建立图关系(build data graph) 
+        - 构造函数(init function):
+            - GraphV2(N)
+                - N the number of node;
+            - add_edge(n1 , n2)
+                - n1 node point to another; intger
+                - n2 node which n1 point to;  intger
+    - moodstyle.PageRank.PageRank
+        - 计算图的page rank（caculate graph）
+        - 函数(Function) 
+            - rank
+                - param: graph GraphV2 model，build node relation
+                - return: weight array,weight of the nodes
