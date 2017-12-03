@@ -3,12 +3,11 @@
 
 from random import randint
 from random import sample
+from b2 import exceptions2
+import DDistance
+
 
 class Canopy(object):
-
-    '''
-    一个类
-    '''
 
     def __init__(self, centre):
         self.centre = centre  # 中心点
@@ -20,9 +19,7 @@ class Canopy(object):
 
 
 class CanopyCluster(object):
-
-    '''
-    canopy 是一个粗聚类算法
+    """canopy 是一个粗聚类算法
     主要是两个值确定：
     t1 外围圈子
     t2 内部圈子
@@ -39,21 +36,18 @@ class CanopyCluster(object):
     思想：
     　　减少计算　，　通过两个半径有效的去除元素
     　　可以为kmeans方法　，　提供ｋ值参考
-    '''
-
-    def __init__(self, t1, t2):
-        if t1 <= t2:
-            raise TypeError, 't1 must be bigger than t2'
+    """
+    def __init__(self, t1, t2, calc_distance = DDistance.DefaultDistance()):
+        exceptions2.judge_null(calc_distance) 
+        exceptions2.judge_type(calc_distance,DDistance.DDdistance)
+        exceptions2.judge_type(t1,(int,float))
+        exceptions2.judge_type(t2,(int,float))
+        exceptions2.judge_smaller(t2,t1)
         self.t1 = t1
         self.t2 = t2
+        self._calc_distance = calc_distance
 
     def cluster(self, datas):
-        '''
-        function:
-            datas 数据数组
-        return 
-
-        '''
         canopys = []
         while len(datas) > 0:
             rand_center = randint(0, len(datas) - 1)
@@ -62,7 +56,7 @@ class CanopyCluster(object):
             index = 0
             # 这里有个操作　，　因为for i in range(9) 这样是在一个ｌｉｓｔ，删除元素无用
             while index < len(datas):
-                distance = self.distance(canopy.centre, datas[index])
+                distance = self._calc_distance.distance(canopy.centre, datas[index])
                 if distance < self.t1:
                     canopy.datas.append(datas[index])
                 if distance < self.t2:
@@ -71,19 +65,3 @@ class CanopyCluster(object):
                 index = index + 1
             canopys.append(canopy)
         return canopys
-
-    def distance(self, data1, data2):
-        raise NotImplementedError
-
-
-class SimpleCanopyCluster(CanopyCluster):
-
-    def distance(self, data1, data2):
-        return abs(data1 - data2)
-
-
-if __name__ == '__main__':
-    s = SimpleCanopyCluster(120, 100)
-    datas = [randint(0, 1000) for i in range(100)]
-    for i in s.cluster(datas):
-        print i
