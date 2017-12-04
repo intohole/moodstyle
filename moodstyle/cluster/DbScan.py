@@ -1,7 +1,11 @@
 #coding=utf-8
 
 from random import randint
-from BaseStrut import WeightArray
+from ..common.BaseStrut import WeightArray
+
+
+
+
 class ClusterItem(object):
 
 

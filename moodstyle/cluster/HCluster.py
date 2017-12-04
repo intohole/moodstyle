@@ -2,7 +2,7 @@
 
 
 import math
-from BaseStrut import WeightArray
+from ..common.BaseStrut import WeightArray
 
 
 

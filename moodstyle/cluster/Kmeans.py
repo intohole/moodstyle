@@ -14,12 +14,12 @@ from DDistance import Euclidean
 from copy import copy
 import sys
 
-'''
+
+"""
 处理数据的格式 [数据1,数据2]
 但是必须要改写 def distance(data1,data2) 数据距离函数
 数据转换格式 {分类:{数据的位置:数据距离}}
-'''
-
+"""
 
 class Center(object):
 
@@ -105,7 +105,6 @@ class Kmeans(object):
 
 
 class DKmeans(Kmeans):
-
     def distance(self, data1, data2):
         return sqrt(
             sum([
@@ -114,9 +113,7 @@ class DKmeans(Kmeans):
             ])
         )
 
-
 class ManhattanKmeans(Kmeans, Manhattan):
-
     pass
 
 

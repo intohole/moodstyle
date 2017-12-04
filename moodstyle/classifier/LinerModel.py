@@ -13,7 +13,7 @@
 #
 
 import Interface
-import DataSet
+from ..common import DataSet
 from b2 import exceptions2
 
 

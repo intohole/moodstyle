@@ -6,9 +6,7 @@ import bisect
 
 
 class Binning(object):
-
-
-    
+   
     def __init__(self,k,box = None):
         self.k = k
         if box is None:
