@@ -1,7 +1,7 @@
 #coding=utf-8
 
 
-from DataSet import DataSet
+from ..common.DataSet import DataSet
 from collections import Counter
 from collections import defaultdict
 import copy
@@ -101,9 +101,7 @@ class PageRank(object):
             weights = copy.copy(graph.weights)
             for i in graph.keys():
                 weights[i] =(1-d) + d * sum([ weights[point_in]/graph.outs_count(point_in) for point_in in graph.ins(i)])
-
             error = graph.update(weights)
-            sys.stderr.write("iter : %s error:%s\n" % (_iter , error))
             if error < min_error:
                 break
         return copy.copy(graph.weights)

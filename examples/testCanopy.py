@@ -5,7 +5,7 @@
 
 
 from random import randint
-from moodstyle import Canopy
+from moodstyle.cluster import Canopy
 
 
 s = Canopy.CanopyCluster(120, 100)

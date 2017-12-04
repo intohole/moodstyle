@@ -1,8 +1,8 @@
 #coding=utf-8    
 
 
-from moodstyle.PageRank import PageRank
-from moodstyle.PageRank import GraphV2
+from moodstyle.alg.PageRank import PageRank
+from moodstyle.alg.PageRank import GraphV2
 
 graph = GraphV2(10)
 graph.add_edge(1 , 9)
