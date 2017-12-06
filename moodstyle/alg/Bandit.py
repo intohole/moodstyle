@@ -84,21 +84,4 @@ class Greedy(object):
 #        self._sub_count[self._last] += 1 
 #        self._sub_sum[self._last] += label
 #
-if __name__ == "__main__":
-    
-    N = 100 
-    p = [random.random() for i in range(N)]
-    greedy = UCB(N,1)
-    TIMES = 100000
-    COUNT = 0
-    for _ in range(TIMES):
-        index = greedy.getIndex()          
-        prop = random.random()
-        if prop <= p[index]:
-            label = 1 
-            COUNT += 1
-        else:
-            label = 0
-        greedy.process(label)
-    print COUNT / float(TIMES)
-            
+          

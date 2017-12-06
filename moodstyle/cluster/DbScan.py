@@ -2,8 +2,8 @@
 
 from random import randint
 from ..common.BaseStrut import WeightArray
-
-
+from b2 import exceptions2
+import DDistance
 
 
 class ClusterItem(object):
@@ -18,8 +18,15 @@ class ClusterItem(object):
 
 class DbScan(object):
 
+    def __init__(self,radius,minPoint,distance = DDistance.DefaultDistance()):
+        exceptions2.judge_type(distance,DDistance.DDdistance)
+        exceptions2.judge_null(radius)
+        exceptions2.judge_null(minPoint)
+        self.distance = distance
+        self.radius = radius
+        self.minPoint = minPoint
 
-    def cluster(self , datas , radius , minPoint):
+    def cluster(self, datas):
         '''
         算法：DBSCAN
         参数：
@@ -38,13 +45,13 @@ class DbScan(object):
         Util 所有核心对象的E领域都遍历完毕
         '''
         cluters = []
-        weight_map = WeightArray(datas , self.distance)
+        weight_map = WeightArray(datas , self.distance.distance)
         items = [ ClusterItem(data) for data in datas ] 
         k = 1 
-        for i in range(items):
+        for i in range(len(items)):
             if items[i].visited == False:
-                neighbours = [ items[j]  for j in range(items) if i != j and  weight_map[(i,j)] < radius ]
-                if len(neighbours) >= minPoint:
+                neighbours = [ items[j]  for j in range(len(items)) if i != j and  weight_map[(i,j)] < self.radius ]
+                if len(neighbours) >= self.minPoint:
                     items[i].visited = True
                     items[i].cluster = k
                     for neighbour in neighbours:
@@ -63,23 +70,3 @@ class DbScan(object):
                 else:
                     items[i].visited = True
                     items[i].cluster = -1
-
-
-        
-
-    def distance(self , data1  , data2 ):
-        raise NotImplementedError 
-            
-
-if __name__ == '__main__':
-    t = DbScan()
-
-
-    datas = [[ _ , randint(0, 20) * 1.0, randint(0, 20) * 1.0] for _ in range(100)]
-    t.cluster()
-    print datas
-
-            
-
-
-
